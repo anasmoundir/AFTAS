@@ -1,4 +1,8 @@
 package com.example.demo.service.serviceImp;
 
-public class FishServiceImpl {
+import com.example.demo.service.FishService;
+import org.springframework.stereotype.Component;
+
+@Component
+public class FishServiceImpl implements FishService {
 }

@@ -1,4 +1,8 @@
 package com.example.demo.service.serviceImp;
 
-public class HuntingServiceImpl {
+import com.example.demo.service.HuntingService;
+import org.springframework.stereotype.Component;
+
+@Component
+public class HuntingServiceImpl implements HuntingService {
 }

@@ -1,4 +1,9 @@
 package com.example.demo.service.serviceImp;
 
-public class MemberServiceImpl {
+import com.example.demo.service.MemberService;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MemberServiceImpl implements MemberService {
+
 }
