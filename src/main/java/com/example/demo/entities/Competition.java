@@ -5,33 +5,30 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.util.Map;
-
-@Entity
+import java.sql.Date;
+import java.time.LocalDateTime;
 @Data
-@AllArgsConstructor
+@Entity
 @NoArgsConstructor
-@Table(name = "competition")
+@Table(name = "competitions")
 public class Competition {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false)
+    @Column(name = "competition_id", nullable = false)
     private Long id;
 
     @Column(name = "code")
     private String code;
 
-    @Column(name = "date")
-    private Date date;
+    @Column(name = "the_date")
+    private Date theDate;
 
-    @Column(name = "startTime")
+    @Column(name = "start_time")
     private Date startTime;
 
-    @Column(name = "endTime")
+    @Column(name = "end_time")
     private Date endTime;
 
-    @Column(name = "numberOfParticipant")
+    @Column(name = "number_of_participant")
     private int numberOfParticipant;
 
     @Column(name = "location")
@@ -39,13 +36,5 @@ public class Competition {
 
     @Column(name = "amount")
     private float amount;
-
-    @ElementCollection
-    @CollectionTable(
-            name = "member_competition_rank",
-            joinColumns = @JoinColumn(name = "competition_id")
-    )
-    @MapKeyJoinColumn(name = "member_id")
-    private Map<Member, CompetitionAttributes> membersAttributes;
 
 }

@@ -2,11 +2,13 @@ package com.example.demo.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "hunting")
@@ -22,5 +24,4 @@ public class Hunting {
     private Competition competition;
     @OneToMany(mappedBy = "hunting", cascade = CascadeType.ALL)
     private Set<Fish> fishes;
-
 }

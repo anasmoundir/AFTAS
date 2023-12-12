@@ -26,5 +26,4 @@ public class Fish {
     @ManyToOne
     @JoinColumn(name = "level_id")
     private Level level;
-
 }

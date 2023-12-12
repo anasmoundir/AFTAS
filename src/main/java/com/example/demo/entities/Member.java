@@ -3,8 +3,10 @@ package com.example.demo.entities;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,11 +14,12 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
 @Table(name = "members")
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false)
+    @Column(name = "member_id", nullable = false)
     private Long id;
     @Column(name= "num")
     private int num;
@@ -29,17 +32,13 @@ public class Member {
     @Column(name = "nationality")
     private  String nationality;
     @Enumerated(EnumType.STRING)
-    @Column(name = "IdentityDocumentType")
+    @Column(name = "identityDocumentType")
     private identityDocumentType identitydocumenttype;
-    @ElementCollection
-    @CollectionTable(
-            name = "competition_emmbers",
-            joinColumns = @JoinColumn(name = "member_id")
-    )
-    @MapKeyJoinColumn(name = "competition_id")
-    @AttributeOverrides({
-            @AttributeOverride(name = "rank", column = @Column(name = "rank")),
-            @AttributeOverride(name = "score", column = @Column(name = "score"))
-    })
-    private Map<Competition, CompetitionAttributes> competitionsAttributes;
+    @Transient
+    private Set<Rankin> rankins = new HashSet<Rankin>();
+    @OneToMany(mappedBy = "member")
+    public Set<Rankin> getRanking() {
+        return rankins;
+    }
+
 }
