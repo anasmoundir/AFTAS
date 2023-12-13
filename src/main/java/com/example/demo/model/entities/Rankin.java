@@ -15,19 +15,20 @@ import lombok.Setter;
 @Entity
 @Table(name = "rankins")
 public class Rankin {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "rankin_id", nullable = false)
-    private Long id;
+    @EmbeddedId
+    private RankingId id;
+
     @ManyToOne
-    @JoinColumn(name = "competition_id")
-    private Competition competition;
-    @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", insertable = false, updatable = false)
     private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "competition_id", insertable = false, updatable = false)
+    private Competition competition;
+
     @Column(name = "rank")
     private int rank;
+
     @Column(name = "score")
     private double score;
-
 }

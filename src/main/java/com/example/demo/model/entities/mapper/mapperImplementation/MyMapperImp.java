@@ -11,8 +11,11 @@ import com.example.demo.model.entities.mapper.RankinMapper;
 import org.mapstruct.Mapper;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public class MyMapperImp implements CompetitionMapper, MemberMapper, RankinMapper {
@@ -24,11 +27,14 @@ public class MyMapperImp implements CompetitionMapper, MemberMapper, RankinMappe
         competitionDto.setId(competition.getId());
         competitionDto.setCode(competition.getCode());
         competitionDto.setAmount(competition.getAmount());
+        competitionDto.setTheDate(competition.getTheDate());
+        competitionDto.setNumberOfParticipant(competition.getNumberOfParticipant());
         competitionDto.setLocation(competition.getLocation());
         competitionDto.setEndTime(competitionDto.getEndTime());
         competitionDto.setStartTime(competitionDto.getStartTime());
         return competitionDto;
     }
+
 
     @Override
     public Competition competitionDtoToCompetition(CompetitionDto competitionDto) {
@@ -37,8 +43,9 @@ public class MyMapperImp implements CompetitionMapper, MemberMapper, RankinMappe
         competition.setLocation(competitionDto.getLocation());
         competition.setCode(competitionDto.getCode());
         competition.setAmount(competitionDto.getAmount());
-        competition.setStartTime((Date) competitionDto.getStartTime());
-        competition.setEndTime((Date) competitionDto.getStartTime());
+        competition.setStartTime(competitionDto.getStartTime());
+        competition.setTheDate(competitionDto.getTheDate());
+        competition.setEndTime(competitionDto.getEndTime());
         competition.setLocation(competitionDto.getLocation());
         competition.setNumberOfParticipant(competitionDto.getNumberOfParticipant());
         competition.setAmount(competitionDto.getAmount());
@@ -52,6 +59,8 @@ public class MyMapperImp implements CompetitionMapper, MemberMapper, RankinMappe
             competitionDtos.add(competitionToCompetitionDto(competition));
         }
         return competitionDtos;    }
+
+
 
     @Override
     public MemberDto memberTomemberDto(Member member) {

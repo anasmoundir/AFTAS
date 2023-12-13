@@ -5,7 +5,22 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
-    <include file="db/changelog/2023/12/11-01-changelog.xml"/>
-    <include file="db/changelog/2023/12/11-02-changelog.xml"/>
-    <include file="db/changelog/2023/12/11-03-changelog.xml"/>
+<!--    <include file="db/changelog/2023/12/11-01-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/11-02-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/11-03-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-01-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-02-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-03-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-04-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-05-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-06-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-07-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-08-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-09-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-10-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-11-changelog.xml"/>-->
+<!--    <include file="db/changelog/2023/12/13-12-changelog.xml"/>-->
+
+<!--    <include file="db/changelog/2023/12/13-15-changelog.xml"/>-->
+    <include file="db/changelog/2023/12/13-16-changelog.xml"/>
 </databaseChangeLog>

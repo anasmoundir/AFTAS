@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1702457864274-6" author="Youcode (generated)">
+        <dropColumn columnName="rankin_id" tableName="rankins"/>
+    </changeSet>
+    <changeSet id="1702457864274-1" author="Youcode (generated)">
+        <addNotNullConstraint columnDataType="BIGINT" columnName="competition_id" tableName="rankins" validate="true"/>
+    </changeSet>
+    <changeSet id="1702457864274-2" author="Youcode (generated)">
+        <addNotNullConstraint columnDataType="BIGINT" columnName="member_id" tableName="rankins" validate="true"/>
+    </changeSet>
+    <changeSet id="1702457864274-4" author="Youcode (generated)">
+        <addPrimaryKey columnNames="member_id, competition_id" constraintName="pk_rankins" tableName="rankins"/>
+    </changeSet>
+
+</databaseChangeLog>

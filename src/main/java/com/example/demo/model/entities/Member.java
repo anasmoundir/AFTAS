@@ -33,11 +33,11 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(name = "identityDocumentType")
     private identityDocumentType identitydocumenttype;
-    @Transient
-    private Set<Rankin> rankins = new HashSet<Rankin>();
+
     @OneToMany(mappedBy = "member")
-    public Set<Rankin> getRanking() {
-        return rankins;
+    private Set<Rankin> rankings;
+    public Set<Rankin> getRankings() {
+        return rankings;
     }
 
 }

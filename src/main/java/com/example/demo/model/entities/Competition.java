@@ -6,13 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Set;
+
 @Data
 @Entity
 @NoArgsConstructor
+
 @Table(name = "competitions")
 public class Competition {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "competition_id", nullable = false)
     private Long id;
 
@@ -20,13 +26,13 @@ public class Competition {
     private String code;
 
     @Column(name = "the_date")
-    private Date theDate;
+    private LocalDate theDate;
 
     @Column(name = "start_time")
-    private Date startTime;
+    private LocalTime startTime;
 
     @Column(name = "end_time")
-    private Date endTime;
+    private LocalTime endTime;
 
     @Column(name = "number_of_participant")
     private int numberOfParticipant;
@@ -36,5 +42,9 @@ public class Competition {
 
     @Column(name = "amount")
     private float amount;
-
+    @OneToMany(mappedBy = "competition")
+    private Set<Rankin> rankings;
+    public Set<Rankin> getRankings() {
+        return rankings;
+    }
 }

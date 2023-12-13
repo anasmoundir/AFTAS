@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/competition")
 public class CompetitionController {
     private final CompetitionService competitionService;
 
@@ -45,6 +46,18 @@ public class CompetitionController {
     public ResponseEntity<Void> deleteCompetition(@PathVariable Long id) {
         competitionService.deleteCompetition(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/open")
+    public ResponseEntity<List<CompetitionDto>> getOpenCompetitions() {
+        List<CompetitionDto> openCompetitions = competitionService.getOpenCompetitions();
+        return ResponseEntity.ok(openCompetitions);
+    }
+
+    @GetMapping("/closed")
+    public ResponseEntity<List<CompetitionDto>> getClosedCompetitions() {
+        List<CompetitionDto> closedCompetitions = competitionService.getClosedCompetitions();
+        return ResponseEntity.ok(closedCompetitions);
     }
 
 }

@@ -23,6 +23,4 @@ public class Level {
     private int points;
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL)
     private Set<Fish> fishes;
-
-
 }

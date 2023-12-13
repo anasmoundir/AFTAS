@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1702461193231-1" author="Youcode (generated)">
+        <dropColumn columnName="end_time" tableName="competitions"/>
+
+        <dropColumn columnName="start_time" tableName="competitions"/>
+    </changeSet>
+    <changeSet id="1702461193231-2" author="Youcode (generated)">
+        <addColumn tableName="competitions">
+            <column name="end_time" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1702461193231-4" author="Youcode (generated)">
+        <addColumn tableName="competitions">
+            <column name="start_time" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

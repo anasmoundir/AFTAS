@@ -17,4 +17,8 @@ public interface CompetitionService {
 
     void deleteCompetition(Long id);
 
+    List<CompetitionDto> getOpenCompetitions();
+
+    List<CompetitionDto> getClosedCompetitions();
+
 }

@@ -9,6 +9,9 @@
     import org.springframework.stereotype.Component;
 
     import java.sql.Date;
+    import java.sql.Timestamp;
+    import java.time.LocalDate;
+    import java.time.LocalDateTime;
     import java.util.List;
 
     @Component
@@ -45,7 +48,7 @@
         public void updateCompetition(Long id, CompetitionDto competitionDto) {
             Competition existingCompetition = icompetitionRepo.findById(id).orElseThrow(() -> new RuntimeException("Competition not found"));
             existingCompetition.setCode(competitionDto.getCode());
-            existingCompetition.setTheDate((Date)competitionDto.getTheDate());
+            existingCompetition.setTheDate(competitionDto.getTheDate());
 
             icompetitionRepo.save(existingCompetition);
         }
@@ -54,4 +57,20 @@
         public void deleteCompetition(Long id) {
             icompetitionRepo.deleteById(id);
         }
+        @Override
+        public List<CompetitionDto> getOpenCompetitions() {
+            LocalDate currentDate = LocalDate.now();
+            LocalDateTime currentTimestamp = LocalDateTime.now();
+            // Convert LocalDateTime to Timestamp if needed
+            Timestamp futureTimestamp = Timestamp.valueOf(currentTimestamp);
+            List<Competition> openCompetitions = icompetitionRepo.findAvailableCompetitions(currentDate, futureTimestamp.toLocalDateTime());
+            return competitionMapper.competitionsToCompetitionDtos(openCompetitions);
+        }
+
+        @Override
+        public List<CompetitionDto> getClosedCompetitions() {
+            List<Competition> closedCompetitions = icompetitionRepo.findOpenAndClosedCompetitions(LocalDate.now(), LocalDateTime.now(), LocalDateTime.now());
+            return competitionMapper.competitionsToCompetitionDtos(closedCompetitions);
+        }
+
     }
