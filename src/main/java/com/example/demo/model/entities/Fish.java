@@ -13,16 +13,13 @@ import lombok.NoArgsConstructor;
 @Table(name ="fish")
 public class Fish {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
     @Column(name = "name")
     private String name;
     @Column(name = "averageweight")
     private  float  averageweight;
-    @ManyToOne
-    @JoinColumn(name = "hunting_id")
-    private Hunting hunting;
     @ManyToOne
     @JoinColumn(name = "level_id")
     private Level level;

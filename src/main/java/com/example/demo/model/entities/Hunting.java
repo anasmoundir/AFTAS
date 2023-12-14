@@ -14,14 +14,21 @@ import java.util.Set;
 @Table(name = "hunting")
 public class Hunting {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
     @Column(name = "nombreOffish")
     private int nombreOffish;
-    @OneToOne
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "fish_id")
+    private Fish fish;
+
+    @ManyToOne
     @JoinColumn(name = "competition_id")
     private Competition competition;
-    @OneToMany(mappedBy = "hunting", cascade = CascadeType.ALL)
-    private Set<Fish> fishes;
 }

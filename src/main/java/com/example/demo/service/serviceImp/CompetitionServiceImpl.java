@@ -3,6 +3,7 @@
     import com.example.demo.model.entities.Competition;
     import com.example.demo.model.entities.dto.CompetitionDto;
     import com.example.demo.model.entities.mapper.CompetitionMapper;
+    import com.example.demo.model.entities.mapper.mapperImplementation.MyMapperImp;
     import com.example.demo.repository.IcompetitionRepo;
     import com.example.demo.service.CompetitionService;
     import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +13,16 @@
     import java.sql.Timestamp;
     import java.time.LocalDate;
     import java.time.LocalDateTime;
+    import java.time.LocalTime;
     import java.util.List;
 
     @Component
     public class CompetitionServiceImpl implements CompetitionService {
         private final IcompetitionRepo icompetitionRepo;
-        private final CompetitionMapper competitionMapper;
+        private final MyMapperImp competitionMapper;
 
         @Autowired
-        public CompetitionServiceImpl(IcompetitionRepo icompetitionRepo, CompetitionMapper competitionMapper) {
+        public CompetitionServiceImpl(IcompetitionRepo icompetitionRepo, MyMapperImp competitionMapper) {
             this.icompetitionRepo = icompetitionRepo;
             this.competitionMapper = competitionMapper;
         }
@@ -49,9 +51,14 @@
             Competition existingCompetition = icompetitionRepo.findById(id).orElseThrow(() -> new RuntimeException("Competition not found"));
             existingCompetition.setCode(competitionDto.getCode());
             existingCompetition.setTheDate(competitionDto.getTheDate());
-
+            existingCompetition.setAmount(competitionDto.getAmount());
+            existingCompetition.setNumberOfParticipant(competitionDto.getNumberOfParticipant());
+            existingCompetition.setLocation(competitionDto.getLocation());
+            existingCompetition.setStartTime(competitionDto.getStartTime());
+            existingCompetition.setEndTime(competitionDto.getEndTime());
             icompetitionRepo.save(existingCompetition);
         }
+
 
         @Override
         public void deleteCompetition(Long id) {
@@ -59,17 +66,18 @@
         }
         @Override
         public List<CompetitionDto> getOpenCompetitions() {
-            LocalDate currentDate = LocalDate.now();
-            LocalDateTime currentTimestamp = LocalDateTime.now();
-            // Convert LocalDateTime to Timestamp if needed
-            Timestamp futureTimestamp = Timestamp.valueOf(currentTimestamp);
-            List<Competition> openCompetitions = icompetitionRepo.findAvailableCompetitions(currentDate, futureTimestamp.toLocalDateTime());
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            LocalTime endTimeOfDay = LocalTime.of(23, 59, 59); // End of the day
+            List<Competition> openCompetitions = icompetitionRepo.findOpenCompetitions(yesterday, endTimeOfDay);
             return competitionMapper.competitionsToCompetitionDtos(openCompetitions);
         }
 
         @Override
         public List<CompetitionDto> getClosedCompetitions() {
-            List<Competition> closedCompetitions = icompetitionRepo.findOpenAndClosedCompetitions(LocalDate.now(), LocalDateTime.now(), LocalDateTime.now());
+            LocalDate currentDate = LocalDate.now();
+            LocalTime endTimeOfDay = LocalTime.MAX;
+            LocalDateTime currentTimestamp = LocalDateTime.now();
+            List<Competition> closedCompetitions = icompetitionRepo.findClosedCompetitions(currentDate, endTimeOfDay, currentTimestamp);
             return competitionMapper.competitionsToCompetitionDtos(closedCompetitions);
         }
 

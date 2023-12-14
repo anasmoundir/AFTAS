@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +19,7 @@ import java.util.Set;
 @Table(name = "members")
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id", nullable = false)
     private Long id;
     @Column(name= "num")
@@ -27,7 +29,7 @@ public class Member {
     @Column(name = "familyName")
     private String familyname;
     @Column(name = "accessionDate")
-    private Date accessionDate;
+    private LocalDate accessionDate;
     @Column(name = "nationality")
     private  String nationality;
     @Enumerated(EnumType.STRING)
