@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -40,11 +41,17 @@ public class Competition {
     @Column(name = "location")
     private String location;
 
+    @OneToMany(mappedBy = "competition", cascade = CascadeType.REMOVE)
+    private List<Hunting> huntingList;
+
     @Column(name = "amount")
     private float amount;
     @OneToMany(mappedBy = "competition")
     private Set<Rankin> rankings;
     public Set<Rankin> getRankings() {
         return rankings;
+    }
+    public List<Hunting> getHuntings() {
+        return huntingList;
     }
 }

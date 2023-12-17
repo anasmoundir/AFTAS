@@ -29,6 +29,24 @@ public class Hunting {
     private Fish fish;
 
     @ManyToOne
-    @JoinColumn(name = "competition_id")
+    @JoinColumn(name = "competition_id", nullable = false)
     private Competition competition;
+
+    public Hunting(Member member, Fish fish, int points) {
+        this.member =member;
+        this.fish =fish;
+
+    }
+
+    public int getPoints() {
+        if (this.fish != null) {
+            if (this.fish.getLevel() != null) {
+                int baseScore = this.fish.getLevel().getPoints();
+                int nombreOffish = this.nombreOffish;
+                double logMultiplier = Math.log1p(nombreOffish);
+                return (int) (baseScore * logMultiplier);
+            }
+        }
+        return 0;
+    }
 }

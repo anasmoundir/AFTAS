@@ -13,5 +13,4 @@ public class FishDto {
     private String name;
     private float averageweight;
     private LevelDto level;
-
 }

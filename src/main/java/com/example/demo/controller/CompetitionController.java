@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/competition")
+@CrossOrigin(origins = "http://localhost:4200")
 public class CompetitionController {
     private final CompetitionService competitionService;
 

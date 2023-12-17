@@ -18,11 +18,11 @@ public class Rankin {
     @EmbeddedId
     private RankingId id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id", insertable = false, updatable = false)
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "competition_id", insertable = false, updatable = false)
     private Competition competition;
 
@@ -31,4 +31,11 @@ public class Rankin {
 
     @Column(name = "score")
     private double score;
+    public Rankin(Member member, Competition competition) {
+        this.member = member;
+        this.competition = competition;
+    }
+    public Competition getCompetition() {
+        return competition;
+    }
 }

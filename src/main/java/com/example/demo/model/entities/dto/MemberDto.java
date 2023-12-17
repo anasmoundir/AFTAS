@@ -12,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberDto {
+    private Long id;
     private int num;
     private String name;
     private String familyname;

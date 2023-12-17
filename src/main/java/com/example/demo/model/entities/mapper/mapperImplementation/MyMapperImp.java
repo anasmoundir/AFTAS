@@ -22,7 +22,6 @@ public class MyMapperImp implements CompetitionMapper, MemberMapper, RankinMappe
     public CompetitionDto competitionToCompetitionDto(Competition competition) {
         CompetitionDto competitionDto = new CompetitionDto();
         competitionDto.setId(competition.getId());
-        competitionDto.setCode(competition.getCode());
         competitionDto.setAmount(competition.getAmount());
         competitionDto.setTheDate(competition.getTheDate());
         competitionDto.setNumberOfParticipant(competition.getNumberOfParticipant());
@@ -48,13 +47,14 @@ public class MyMapperImp implements CompetitionMapper, MemberMapper, RankinMappe
         for (Competition competition : competitions) {
             competitionDtos.add(competitionToCompetitionDto(competition));
         }
-        return competitionDtos;    }
+        return competitionDtos;
+    }
 
 
 
     @Override
     public MemberDto memberTomemberDto(Member member) {
-        MemberDto  memberDto = new MemberDto(member.getNum(),
+        MemberDto  memberDto = new MemberDto(member.getId(),member.getNum(),
                 member.getName(),
                 member.getFamilyname(),
                 member.getAccessionDate(),
@@ -67,6 +67,7 @@ public class MyMapperImp implements CompetitionMapper, MemberMapper, RankinMappe
     @Override
     public Member memberDtoTomember(MemberDto memberDto) {
         Member member = new Member();
+        member.setId(memberDto.getId());
         member.setName(memberDto.getName());
         member.setNum(memberDto.getNum());
         member.setNationality(memberDto.getNationality());

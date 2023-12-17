@@ -14,6 +14,7 @@
     import java.time.LocalDate;
     import java.time.LocalDateTime;
     import java.time.LocalTime;
+    import java.time.format.DateTimeFormatter;
     import java.util.List;
 
     @Component
@@ -42,14 +43,24 @@
         @Override
         public CompetitionDto addCompetition(CompetitionDto competitionDto) {
             Competition competition = competitionMapper.competitionDtoToCompetition(competitionDto);
+            String locationCode = extractLocationCode(competitionDto.getLocation());
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yy");
+            String datePart = competitionDto.getTheDate().format(dateFormatter);
+            String generatedCode = locationCode + "-" + datePart;
+            competition.setCode(generatedCode);
             icompetitionRepo.save(competition);
             return competitionMapper.competitionToCompetitionDto(competition);
+        }
+        private String extractLocationCode(String location) {
+            if (location.length() >= 3) {
+                return location.substring(0, 3).toUpperCase();
+            } else {return location.toUpperCase();
+            }
         }
 
         @Override
         public void updateCompetition(Long id, CompetitionDto competitionDto) {
             Competition existingCompetition = icompetitionRepo.findById(id).orElseThrow(() -> new RuntimeException("Competition not found"));
-            existingCompetition.setCode(competitionDto.getCode());
             existingCompetition.setTheDate(competitionDto.getTheDate());
             existingCompetition.setAmount(competitionDto.getAmount());
             existingCompetition.setNumberOfParticipant(competitionDto.getNumberOfParticipant());

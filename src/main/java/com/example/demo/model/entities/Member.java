@@ -35,8 +35,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @Column(name = "identityDocumentType")
     private identityDocumentType identitydocumenttype;
-
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Rankin> rankings;
     public Set<Rankin> getRankings() {
         return rankings;

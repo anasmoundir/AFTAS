@@ -19,7 +19,7 @@ import java.util.Date;
 @Data
 public class CompetitionDto {
     private Long id;
-    private String code;
+//    private String code;
 //    @JsonDeserialize(using = LocalDateDeserializer.class)
 
     private LocalDate theDate;
