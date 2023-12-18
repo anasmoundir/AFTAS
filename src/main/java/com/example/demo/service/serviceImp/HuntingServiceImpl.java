@@ -1,6 +1,7 @@
 package com.example.demo.service.serviceImp;
 
 import com.example.demo.model.entities.*;
+import com.example.demo.model.entities.dto.CompetitionDto;
 import com.example.demo.model.entities.dto.HuntingDto;
 import com.example.demo.model.entities.dto.MemberDto;
 import com.example.demo.model.entities.mapper.HuntingMapper;
@@ -12,13 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class HuntingServiceImpl implements HuntingService {
     private final IhuntingRepo huntingRepo;
     private final HuntingMapper huntingMapper;
-
+    private final  IfishRepo fishrepo;
     private final IcompetitionRepo icompetitionRepo;
     private final MemberServiceImpl memberService;
     private final MyMapperImp mapperImp;
@@ -27,7 +29,7 @@ public class HuntingServiceImpl implements HuntingService {
 
     @Autowired
     public HuntingServiceImpl( MemberServiceImpl memberService,IhuntingRepo huntingRepo, HuntingMapper huntingMapper,RankinServiceImpl rankinService, ImemberRepo imemberRepo,
-                              IcompetitionRepo icompetitionRepo,MyMapperImp mapperImp,IrankinRepo rankrepo) {
+                              IcompetitionRepo icompetitionRepo,MyMapperImp mapperImp,IrankinRepo rankrepo,IfishRepo fishrepo) {
         this.huntingRepo = huntingRepo;
         this.huntingMapper = huntingMapper;
         this.rankinService =rankinService;
@@ -35,6 +37,7 @@ public class HuntingServiceImpl implements HuntingService {
         this.memberService =memberService;
         this.mapperImp = mapperImp;
         this.rankrepo =rankrepo;
+        this.fishrepo =fishrepo;
     }
 
     @Override
@@ -53,61 +56,80 @@ public class HuntingServiceImpl implements HuntingService {
     }
 
     @Override
-    public Hunting createHunting(Member member, Fish fish) {
+    public Hunting createHunting(HuntingDto huntingDto) {
         try {
+            Member member = mapperImp.memberDtoTomember(memberService.getMemberById(huntingDto.getMemberId()));
+            Fish fish = fishrepo.findById(huntingDto.getFishId())
+                    .orElseThrow(() -> new EntityNotFoundException("Fish not found with ID: " + huntingDto.getFishId()));
+            Competition competition = icompetitionRepo.findById(huntingDto.getCompetitionId())
+                    .orElseThrow(() -> new EntityNotFoundException("Competition not found with ID: " + huntingDto.getCompetitionId()));
             Level level = fish.getLevel();
-            int points = level.getPoints();
-            Hunting hunting = new Hunting(member, fish, points);
-            huntingRepo.save(hunting);
+            int points = level.getPoints() * huntingDto.getNombreOffish();
 
-            Competition competition = hunting.getCompetition();
-            Rankin ranking = huntingRepo.findByMemberAndCompetition(member, competition);
-            if (ranking == null) {
-                ranking = new Rankin(member, competition);
+
+            if (member != null && fish != null && competition != null) {
+                Hunting hunting = new Hunting(member, fish, competition, huntingDto.getNombreOffish());
+                huntingRepo.save(hunting);
+                updateRanking(member, competition, points);
+                return hunting;
+            } else {
+                throw new RuntimeException("One or more entities (Member, Fish, Competition) are null");
             }
-            ranking.setScore(ranking.getScore() + points);
-            rankinService.calculateRank(ranking);
-            rankrepo.save(ranking);
-
-            return hunting;
         } catch (EntityNotFoundException e) {
             throw new RuntimeException("Entity not found", e);
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error while creating hunting", e);
         }
     }
-    @Override
-    public HuntingDto updateHunting(Long id, HuntingDto huntingDto) {
-        // Implement update logic
-        // You may need to fetch the entity, update fields, and save it
-        // For simplicity, this is left as an exercise
-        throw new UnsupportedOperationException("Update operation not implemented yet");
+    private void updateRanking(Member member, Competition competition, int points) {
+        Rankin ranking = rankrepo.findByMemberAndCompetition(member, competition);
+        if(ranking == null)
+        {
+            try
+            {
+                memberService.registerMemberInCompetition(member,competition);
+                Rankin rankingnew = rankrepo.findByMemberAndCompetition(member, competition);
+                rankingnew.setScore(rankingnew.getScore() + points);
+                rankinService.calculateRank(rankingnew);
+                rankrepo.save(rankingnew);
+            }catch (Exception e){
+                throw e;
+            }
+        }else {
+            ranking.setScore(ranking.getScore() + points);
+            rankinService.calculateRank(ranking);
+            rankrepo.save(ranking);
+        }
     }
 
     @Override
     public HuntingDto addHuntingAndCalculateScore(HuntingDto huntingDto) {
-        HuntingDto createdHunting = createHunting(huntingDto);
+        Hunting createdHunting = createHunting(huntingDto);
         updateMemberScore(createdHunting);
-        return createdHunting;
+
+        return huntingMapper.HuntingToHuntingDto(createdHunting);
     }
 
-    private void updateMemberScore(HuntingDto huntingDto) {
-        Hunting  hunting = mapperImp.HuntingDtoToHunting(huntingDto);
-        Long membeDTOId = huntingDto.getMemberId();
-        MemberDto existingMember = memberService.getMemberById(membeDTOId);
-        Member member = mapperImp.memberDtoTomember(existingMember);
+    private void updateMemberScore(Hunting hunting) {
+        MemberDto existingMember = memberService.getMemberById(hunting.getMember().getId());
         rankinService.updateRankingAndScore(hunting);
         memberService.updateMember(existingMember.getId(), existingMember);
     }
-
+    @Override
+    public HuntingDto updateHunting(Long id, HuntingDto huntingDto) {
+        Hunting updatedHunting = huntingRepo.findById(id)
+                .map(hunting -> {
+                    hunting.setNombreOffish(huntingDto.getNombreOffish());
+                    return huntingRepo.save(hunting);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Hunting not found with id: " + id));
+        updateMemberScore(updatedHunting);
+        return huntingMapper.HuntingToHuntingDto(updatedHunting);
+    }
 
     @Override
     public void deleteHunting(Long id) {
         huntingRepo.deleteById(id);
     }
 
-    @Override
-    public HuntingDto createHunting(HuntingDto huntingDto) {
-        return null;
-    }
 }

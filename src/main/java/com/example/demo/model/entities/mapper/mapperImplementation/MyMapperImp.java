@@ -101,19 +101,16 @@ public class MyMapperImp implements CompetitionMapper, MemberMapper, RankinMappe
     public Hunting HuntingDtoToHunting(HuntingDto huntingDto) {
         Hunting hunting = new Hunting();
         hunting.setNombreOffish(huntingDto.getNombreOffish());
-
         if (huntingDto.getCompetitionId() != null) {
             Competition competition = new Competition();
             competition.setId(huntingDto.getCompetitionId());
             hunting.setCompetition(competition);
         }
-
         if (huntingDto.getFishId() != null) {
             Fish fish = new Fish();
             fish.setId(huntingDto.getFishId());
             hunting.setFish(fish);
         }
-
         if (huntingDto.getMemberId() != null) {
             Member member = new Member();
             member.setId(huntingDto.getMemberId());

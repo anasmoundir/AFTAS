@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Entity
 @Data
 @AllArgsConstructor
@@ -17,6 +15,7 @@ public class Hunting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
     @Column(name = "nombreOffish")
     private int nombreOffish;
 
@@ -32,20 +31,20 @@ public class Hunting {
     @JoinColumn(name = "competition_id", nullable = false)
     private Competition competition;
 
-    public Hunting(Member member, Fish fish, int points) {
-        this.member =member;
-        this.fish =fish;
 
+    public Hunting(Member member, Fish fish, Competition competition, int nombreOffish) {
+        this.member = member;
+        this.fish = fish;
+        this.competition = competition;
+        this.nombreOffish = nombreOffish;
     }
 
     public int getPoints() {
-        if (this.fish != null) {
-            if (this.fish.getLevel() != null) {
-                int baseScore = this.fish.getLevel().getPoints();
-                int nombreOffish = this.nombreOffish;
-                double logMultiplier = Math.log1p(nombreOffish);
-                return (int) (baseScore * logMultiplier);
-            }
+        if (this.fish != null && this.fish.getLevel() != null) {
+            int baseScore = this.fish.getLevel().getPoints();
+            int nombreOffish = this.nombreOffish;
+            double logMultiplier = Math.log1p(nombreOffish);
+            return (int) (baseScore * logMultiplier);
         }
         return 0;
     }

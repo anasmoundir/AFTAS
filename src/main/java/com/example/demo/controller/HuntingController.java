@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.entities.dto.HuntingDto;
 import com.example.demo.service.HuntingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,10 +32,10 @@ public class HuntingController {
         return ResponseEntity.ok(hunting);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<HuntingDto> createHunting(@RequestBody HuntingDto huntingDto) {
-        HuntingDto createdHunting = huntingService.createHunting(huntingDto);
-        return ResponseEntity.ok(createdHunting);
+        HuntingDto createdHunting = huntingService.addHuntingAndCalculateScore(huntingDto);
+        return new ResponseEntity<>(createdHunting, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -42,7 +43,6 @@ public class HuntingController {
         HuntingDto updatedHunting = huntingService.updateHunting(id, huntingDto);
         return ResponseEntity.ok(updatedHunting);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteHunting(@PathVariable Long id) {
         huntingService.deleteHunting(id);

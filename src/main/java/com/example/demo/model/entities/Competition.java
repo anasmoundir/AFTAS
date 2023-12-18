@@ -1,9 +1,7 @@
 package com.example.demo.model.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -12,8 +10,10 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
-@Data
 @Entity
+@Setter
+@Getter
+@AllArgsConstructor
 @NoArgsConstructor
 
 @Table(name = "competitions")

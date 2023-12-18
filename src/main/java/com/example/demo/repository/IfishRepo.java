@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IfishRepo extends JpaRepository<Fish,Long> {
 
+    Fish getFishById(Long fishId);
 }
