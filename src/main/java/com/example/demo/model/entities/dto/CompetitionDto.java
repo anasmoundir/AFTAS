@@ -31,8 +31,7 @@ public class CompetitionDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     private LocalTime endTime;
 
-
-    private int numberOfParticipant ;
+    private int numberOfParticipant;
     private String location;
     private float amount;
 }

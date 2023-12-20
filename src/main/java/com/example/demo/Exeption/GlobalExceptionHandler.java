@@ -45,5 +45,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     {
         return  new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(CompetitionIsNotOpen.class)
+    public  ResponseEntity<String>  handleCompetitionNotOpen(final CompetitionIsNotOpen e)
+    {
+        return  new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+    }
 
 }

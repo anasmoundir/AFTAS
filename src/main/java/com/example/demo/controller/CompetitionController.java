@@ -57,7 +57,6 @@ public class CompetitionController {
         Page<CompetitionDto> openCompetitions = competitionService.getOpenCompetitions(pageable);
         return new ResponseEntity<>(openCompetitions, HttpStatus.OK);
     }
-
     @GetMapping("/closed")
     public ResponseEntity<Page<CompetitionDto>> getClosedCompetitions(Pageable pageable) {
         Page<CompetitionDto> closedCompetitions = competitionService.getClosedCompetitions(pageable);

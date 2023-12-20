@@ -13,28 +13,35 @@ import java.time.LocalDateTime;
 
 import java.time.LocalTime;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 
 @Repository
 public interface IcompetitionRepo extends PagingAndSortingRepository<Competition, Long> {
-    @Query("SELECT comp FROM Competition comp " +
-            "WHERE comp.theDate = :yesterday " +
-            "AND comp.startTime < :endTimeOfDay")
-    Page<Competition> findOpenCompetitions(
-            @Param("yesterday") LocalDate yesterday,
-            @Param("endTimeOfDay") LocalTime endTimeOfDay,
-            Pageable pageable);
 
     @Query("SELECT comp FROM Competition comp " +
-            "WHERE (comp.theDate < :currentDate OR (comp.theDate = :currentDate AND comp.endTime <= :endTimeOfDay)) " +
-            "AND comp.endTime > :currentTimestamp")
-    Page<Competition> findClosedCompetitions(
+            "WHERE comp.theDate >= :currentDate " +
+            "OR (comp.theDate = :currentDate AND comp.endTime > :currentTimestamp) " +
+            "ORDER BY comp.theDate DESC")
+    List<Competition> findOpenCompetitionsForRegistration(
             @Param("currentDate") LocalDate currentDate,
-            @Param("endTimeOfDay") LocalTime endTimeOfDay,
-            @Param("currentTimestamp") LocalDateTime currentTimestamp,
-            Pageable pageable);
+            @Param("currentTimestamp") LocalTime currentTimestamp);
+@Query("SELECT comp FROM Competition comp " +
+        "WHERE comp.theDate >= :currentDate " +
+        "OR (comp.theDate = :currentDate AND comp.endTime > :currentTimestamp) " +
+        "ORDER BY comp.theDate DESC")
+Page<Competition> findOpenCompetitions(
+        @Param("currentDate") LocalDate currentDate,
+        @Param("currentTimestamp") LocalTime currentTimestamp,
+        Pageable pageable);
 
+
+Page<Competition> findByTheDateBeforeAndEndTimeAfterOrderByTheDateDesc(
+        LocalDate currentDate,
+        LocalTime currentTimestamp,
+        Pageable pageable
+);
 
     Optional<Object> findById(Long id);
 

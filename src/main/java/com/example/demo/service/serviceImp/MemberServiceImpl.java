@@ -1,5 +1,6 @@
 package com.example.demo.service.serviceImp;
 
+import com.example.demo.Exeption.CompetitionNotFoundException;
 import com.example.demo.Exeption.PersonNotFoundException;
 import com.example.demo.Util.ResponseManager;
 import com.example.demo.model.entities.Competition;
@@ -8,6 +9,8 @@ import com.example.demo.model.entities.Rankin;
 import com.example.demo.model.entities.RankingId;
 import com.example.demo.model.entities.dto.MemberDto;
 import com.example.demo.model.entities.mapper.MyMapperImp;
+import com.example.demo.repository.IcompetitionRepo;
+import com.example.demo.repository.IfishRepo;
 import com.example.demo.repository.ImemberRepo;
 import com.example.demo.repository.IrankinRepo;
 import com.example.demo.service.MemberService;
@@ -15,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -26,13 +32,16 @@ public class MemberServiceImpl implements MemberService {
     private final MyMapperImp myMapperImp;
     private  final  IrankinRepo irankinRepo;
 
+    private final IcompetitionRepo icompetitionRepo;
     @Autowired
-    public  MemberServiceImpl(ImemberRepo  imemberRepo,
-                              MyMapperImp myMapperImp, IrankinRepo irankinRepo)
+    public  MemberServiceImpl( ImemberRepo  imemberRepo,
+                              MyMapperImp myMapperImp, IrankinRepo irankinRepo,CompetitionServiceImpl competitionService,
+                              IcompetitionRepo icompetitionRepo)
     {
         this.imemberRepo =imemberRepo;
         this.myMapperImp = myMapperImp;
         this.irankinRepo = irankinRepo;
+        this.icompetitionRepo = icompetitionRepo;
     }
 
 
@@ -122,19 +131,25 @@ public class MemberServiceImpl implements MemberService {
         if (member == null || competition == null) {
             return ResponseManager.badRequest("Invalid member or competition").hasBody();
         }
+        LocalDate today = LocalDate.now();
+        LocalTime startTime = LocalTime.now().plusHours(24);
+        Rankin rankin1 =new Rankin();
+        List<Competition> openCompetitionsList = icompetitionRepo.findOpenCompetitionsForRegistration(today,startTime);
+        if (openCompetitionsList != null && openCompetitionsList.stream().anyMatch(c -> c.getId().equals(competition.getId())))
+        {
         RankingId rankin = new RankingId();
         rankin.setMemberId(member.getId());
         rankin.setCompetitionId(competition.getId());
-        Optional<Rankin> existingRankin = irankinRepo.findById(rankin);
-//        if(existingRankin.isPresent()){
-        Rankin rankin1 =new Rankin();
         rankin1.setId(rankin);
         rankin1.setRank(0);
         rankin1.setScore(0.0);
+        competition.setNumberOfParticipant(competition.getNumberOfParticipant() + 1);
         irankinRepo.save(rankin1);
+        }
+        else {
+        throw new CompetitionNotFoundException("competition not found or already closed");
+        }
         return true;
-//    }
-//        else return false;
     }
 
     }

@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.entities.dto.HuntingDto;
 import com.example.demo.service.HuntingService;
+import com.example.demo.service.serviceImp.HuntingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,10 @@ import java.util.List;
 @RequestMapping("/api/huntings")
 @CrossOrigin(origins = "http://localhost:4200")
 public class HuntingController {
-    private final HuntingService huntingService;
+    private final HuntingServiceImpl huntingService;
 
     @Autowired
-    public HuntingController(HuntingService huntingService) {
+    public HuntingController(HuntingServiceImpl huntingService) {
         this.huntingService = huntingService;
     }
 

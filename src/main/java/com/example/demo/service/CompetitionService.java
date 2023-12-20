@@ -20,6 +20,10 @@ public interface CompetitionService {
 
     void deleteCompetition(Long id);
 
+//    Page<CompetitionDto> getOpenCompetitions(Pageable pageable);
+
+//    List<CompetitionDto> getOpenCompetitions();
+
     Page<CompetitionDto> getOpenCompetitions(Pageable pageable);
 
     Page<CompetitionDto> getClosedCompetitions(Pageable pageable);

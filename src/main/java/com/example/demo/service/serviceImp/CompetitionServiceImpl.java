@@ -1,5 +1,4 @@
     package com.example.demo.service.serviceImp;
-
     import com.example.demo.Exeption.CompetitionNotFoundException;
     import com.example.demo.model.entities.Competition;
     import com.example.demo.model.entities.dto.CompetitionDto;
@@ -9,10 +8,8 @@
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.data.domain.Page;
     import org.springframework.stereotype.Component;
-
     import org.springframework.data.domain.Pageable;
     import java.time.LocalDate;
-    import java.time.LocalDateTime;
     import java.time.LocalTime;
     import java.time.format.DateTimeFormatter;
     import java.util.List;
@@ -88,18 +85,21 @@
         }
         @Override
         public Page<CompetitionDto> getOpenCompetitions(Pageable pageable) {
-            LocalDate yesterday = LocalDate.now().minusDays(1);
-            LocalTime endTimeOfDay = LocalTime.of(23, 59, 59);
-            Page<Competition> openCompetitions = icompetitionRepo.findOpenCompetitions(yesterday, endTimeOfDay, pageable);
+            LocalDate today = LocalDate.now();
+            LocalTime startTime = LocalTime.now().plusHours(24);
+
+            Page<Competition> openCompetitions = icompetitionRepo.findOpenCompetitions(today, startTime, pageable);
+            System.out.println(openCompetitions);
             return openCompetitions.map(competitionMapper::competitionToCompetitionDto);
         }
 
         @Override
         public Page<CompetitionDto> getClosedCompetitions(Pageable pageable) {
             LocalDate currentDate = LocalDate.now();
+            System.out.println(currentDate);
             LocalTime endTimeOfDay = LocalTime.MAX;
-            LocalDateTime currentTimestamp = LocalDateTime.now();
-            Page<Competition> closedCompetitions = icompetitionRepo.findClosedCompetitions(currentDate, endTimeOfDay, currentTimestamp, pageable);
+            System.out.println(endTimeOfDay);
+            Page<Competition> closedCompetitions = icompetitionRepo.findByTheDateBeforeAndEndTimeAfterOrderByTheDateDesc(currentDate, endTimeOfDay, pageable);
             return closedCompetitions.map(competitionMapper::competitionToCompetitionDto);
         }
 
