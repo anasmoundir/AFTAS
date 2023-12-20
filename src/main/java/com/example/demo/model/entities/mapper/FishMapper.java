@@ -6,7 +6,10 @@ import com.example.demo.model.entities.dto.FishDto;
 import java.util.List;
 
 public interface FishMapper {
+
     FishDto fishToFishDto(Fish fish);
+
     Fish fishDtoToFish(FishDto fishDto);
-    List<FishDto> fishsToFishDto(List<Fish> fishs);
+
+    List<FishDto> fishToFishDtos(List<Fish> fishList);
 }

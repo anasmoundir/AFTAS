@@ -1,28 +1,34 @@
 package com.example.demo.controller;
 
+import com.example.demo.Exeption.PersonNotFoundException;
 import com.example.demo.Util.ResponseManager;
 import com.example.demo.model.entities.dto.CompetitionDto;
 import com.example.demo.model.entities.dto.MemberDto;
-import com.example.demo.model.entities.mapper.mapperImplementation.MyMapperImp;
+
+import com.example.demo.model.entities.mapper.MyMapperImp;
 import com.example.demo.repository.IrankinRepo;
 import com.example.demo.service.CompetitionService;
 import com.example.demo.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("api/member")
+@RestControllerAdvice
 @CrossOrigin(origins = "http://localhost:4200")
 public class MemberController {
     private  final MemberService memberService;
     private  final CompetitionService competitionService;
-    private  final MyMapperImp  myMapperImp;
     private final IrankinRepo irankinRepo;
+    private MyMapperImp myMapperImp;
 
     @Autowired
     public MemberController( MemberService memberService,CompetitionService competitionService, MyMapperImp  myMapperImp,
@@ -36,15 +42,18 @@ public class MemberController {
     @GetMapping("/{id}")
     public ResponseEntity<MemberDto>  getMemberById(@PathVariable Long id)
     {
+        try{
         MemberDto memberDto = memberService.getMemberById(id);
         return  ResponseEntity.ok(memberDto);
     }
+    catch (Exception e) {
+        throw e;
+    }
+    }
     @GetMapping("/All")
-    public  ResponseEntity<List<MemberDto>> getAllMembers()
-    {
-        List<MemberDto> memberDtos = memberService.getALlMember();
-        ResponseManager.notFound("no member found here add one per favor");
-      return ResponseEntity.ok(memberDtos);
+    public ResponseEntity<Page<MemberDto>> getAllMembers(Pageable pageable) {
+        Page<MemberDto> membersPage = memberService.getAllMembers(pageable);
+        return ResponseEntity.ok(membersPage);
     }
     @PostMapping
     public ResponseEntity<MemberDto> addMember(@RequestBody MemberDto memberDto)
@@ -75,9 +84,10 @@ public class MemberController {
             return ResponseEntity.badRequest().build();
         }
 
-        if (memberService.registerMemberInCompetition(myMapperImp.memberDtoTomember(member), myMapperImp.competitionDtoToCompetition(competition))) {
+        if (memberService.registerMemberInCompetition(myMapperImp.memberDtoToMember(member), myMapperImp.competitionDtoToCompetition(competition))) {
             return ResponseManager.good("good");
         } else {
+
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
@@ -87,8 +97,8 @@ public class MemberController {
         try {
             memberService.updateMember(id, memberDto);
             return ResponseEntity.ok().build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
+        } catch (PersonNotFoundException e) {
+            throw e;
         }
     }
 

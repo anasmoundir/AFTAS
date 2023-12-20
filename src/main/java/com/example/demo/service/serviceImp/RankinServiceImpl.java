@@ -40,8 +40,6 @@ public class RankinServiceImpl implements RankinService {
         List<Hunting> huntings = competition.getHuntings();
         List<Integer> scores = huntings.stream().map(Hunting::getPoints).sorted(Collections.reverseOrder()).toList();
         int rank = scores.indexOf(ranking.getScore()) + 1;
-            System.out.println("the rank" +rank);
         ranking.setRank(rank);
     }
-
 }

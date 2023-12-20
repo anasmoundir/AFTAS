@@ -1,6 +1,8 @@
 package com.example.demo.model.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,17 +18,21 @@ public class Hunting {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @PositiveOrZero(message = "Number of fish must be a positive or zero")
     @Column(name = "nombreOffish")
     private int nombreOffish;
 
+    @NotNull(message = "Member cannot be null")
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @NotNull(message = "Fish cannot be null")
     @ManyToOne
     @JoinColumn(name = "fish_id")
     private Fish fish;
 
+    @NotNull(message = "Competition cannot be null")
     @ManyToOne
     @JoinColumn(name = "competition_id", nullable = false)
     private Competition competition;

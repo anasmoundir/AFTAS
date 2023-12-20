@@ -6,7 +6,10 @@ import com.example.demo.model.entities.dto.HuntingDto;
 import java.util.List;
 
 public interface HuntingMapper {
-    HuntingDto HuntingToHuntingDto(Hunting hunting);
-    Hunting HuntingDtoToHunting(HuntingDto huntingDto);
-    List<HuntingDto> HuntingsToHuntingDto(List<Hunting> huntings);
+
+    HuntingDto huntingToHuntingDto(Hunting hunting);
+
+    Hunting huntingDtoToHunting(HuntingDto huntingDto);
+
+    List<HuntingDto> huntingsToHuntingDtos(List<Hunting> huntings);
 }

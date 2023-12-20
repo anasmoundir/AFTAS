@@ -3,6 +3,9 @@ package com.example.demo.controller;
 import com.example.demo.model.entities.dto.CompetitionDto;
 import com.example.demo.service.CompetitionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,15 +53,15 @@ public class CompetitionController {
     }
 
     @GetMapping("/open")
-    public ResponseEntity<List<CompetitionDto>> getOpenCompetitions() {
-        List<CompetitionDto> openCompetitions = competitionService.getOpenCompetitions();
-        return ResponseEntity.ok(openCompetitions);
+    public ResponseEntity<Page<CompetitionDto>> getOpenCompetitions(Pageable pageable) {
+        Page<CompetitionDto> openCompetitions = competitionService.getOpenCompetitions(pageable);
+        return new ResponseEntity<>(openCompetitions, HttpStatus.OK);
     }
 
     @GetMapping("/closed")
-    public ResponseEntity<List<CompetitionDto>> getClosedCompetitions() {
-        List<CompetitionDto> closedCompetitions = competitionService.getClosedCompetitions();
-        return ResponseEntity.ok(closedCompetitions);
+    public ResponseEntity<Page<CompetitionDto>> getClosedCompetitions(Pageable pageable) {
+        Page<CompetitionDto> closedCompetitions = competitionService.getClosedCompetitions(pageable);
+        return new ResponseEntity<>(closedCompetitions, HttpStatus.OK);
     }
 
 }

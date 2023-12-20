@@ -1,11 +1,13 @@
 package com.example.demo.service.serviceImp;
 
+import com.example.demo.Exeption.CompetitionNotFoundException;
+import com.example.demo.Exeption.FishNotFoundException;
 import com.example.demo.model.entities.*;
 import com.example.demo.model.entities.dto.CompetitionDto;
 import com.example.demo.model.entities.dto.HuntingDto;
 import com.example.demo.model.entities.dto.MemberDto;
 import com.example.demo.model.entities.mapper.HuntingMapper;
-import com.example.demo.model.entities.mapper.mapperImplementation.MyMapperImp;
+import com.example.demo.model.entities.mapper.MyMapperImp;
 import com.example.demo.repository.*;
 import com.example.demo.service.HuntingService;
 import jakarta.persistence.EntityNotFoundException;
@@ -44,7 +46,7 @@ public class HuntingServiceImpl implements HuntingService {
     public List<HuntingDto> getAllHuntings() {
         List<Hunting> huntings = huntingRepo.findAll();
         return huntings.stream()
-                .map(huntingMapper::HuntingToHuntingDto)
+                .map(huntingMapper::huntingToHuntingDto)
                 .collect(Collectors.toList());
     }
 
@@ -52,20 +54,21 @@ public class HuntingServiceImpl implements HuntingService {
     public HuntingDto getHuntingById(Long id) {
         Hunting hunting = huntingRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Hunting not found with id: " + id));
-        return huntingMapper.HuntingToHuntingDto(hunting);
+        return huntingMapper.huntingToHuntingDto(hunting);
     }
 
     @Override
     public Hunting createHunting(HuntingDto huntingDto) {
         try {
-            Member member = mapperImp.memberDtoTomember(memberService.getMemberById(huntingDto.getMemberId()));
+            Member member = mapperImp.memberDtoToMember(memberService.getMemberById(huntingDto.getMemberId()));
             Fish fish = fishrepo.findById(huntingDto.getFishId())
-                    .orElseThrow(() -> new EntityNotFoundException("Fish not found with ID: " + huntingDto.getFishId()));
-            Competition competition = icompetitionRepo.findById(huntingDto.getCompetitionId())
-                    .orElseThrow(() -> new EntityNotFoundException("Competition not found with ID: " + huntingDto.getCompetitionId()));
+                    .orElseThrow(() -> new FishNotFoundException("Fish not found with ID: " + huntingDto.getFishId()));
+
+            Competition competition = (Competition) icompetitionRepo.findById(huntingDto.getCompetitionId())
+                    .orElseThrow(() -> new CompetitionNotFoundException("Competition not found with ID: " + huntingDto.getCompetitionId()));
+
             Level level = fish.getLevel();
             int points = level.getPoints() * huntingDto.getNombreOffish();
-
 
             if (member != null && fish != null && competition != null) {
                 Hunting hunting = new Hunting(member, fish, competition, huntingDto.getNombreOffish());
@@ -107,7 +110,7 @@ public class HuntingServiceImpl implements HuntingService {
         Hunting createdHunting = createHunting(huntingDto);
         updateMemberScore(createdHunting);
 
-        return huntingMapper.HuntingToHuntingDto(createdHunting);
+        return huntingMapper.huntingToHuntingDto(createdHunting);
     }
 
     private void updateMemberScore(Hunting hunting) {
@@ -124,7 +127,7 @@ public class HuntingServiceImpl implements HuntingService {
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Hunting not found with id: " + id));
         updateMemberScore(updatedHunting);
-        return huntingMapper.HuntingToHuntingDto(updatedHunting);
+        return huntingMapper.huntingToHuntingDto(updatedHunting);
     }
 
     @Override

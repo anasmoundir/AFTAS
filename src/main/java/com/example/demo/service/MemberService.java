@@ -4,17 +4,20 @@ import ch.qos.logback.classic.model.processor.LogbackClassicDefaultNestedCompone
 import com.example.demo.model.entities.Competition;
 import com.example.demo.model.entities.Member;
 import com.example.demo.model.entities.dto.MemberDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public interface MemberService {
+
     MemberDto getMemberById(Long id);
-    List<MemberDto> getALlMember();
+
+    Page<MemberDto> getAllMembers(Pageable pageable);
+
     MemberDto addMember(MemberDto memberDto);
-
-
 
     List<MemberDto> searchMembersByName(String name);
 

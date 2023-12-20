@@ -8,8 +8,11 @@ import com.example.demo.model.entities.dto.MemberDto;
 import java.util.List;
 
 public interface MemberMapper {
-     MemberDto memberTomemberDto(Member member);
-     Member memberDtoTomember(MemberDto memberDto);
+
+    MemberDto memberToMemberDto(Member member);
+
+    Member memberDtoToMember(MemberDto memberDto);
+
     List<MemberDto> membersToMemberDtos(List<Member> members);
 
 }

@@ -1,18 +1,20 @@
 package com.example.demo.service.serviceImp;
 
+import com.example.demo.Exeption.PersonNotFoundException;
 import com.example.demo.Util.ResponseManager;
 import com.example.demo.model.entities.Competition;
 import com.example.demo.model.entities.Member;
 import com.example.demo.model.entities.Rankin;
 import com.example.demo.model.entities.RankingId;
 import com.example.demo.model.entities.dto.MemberDto;
-import com.example.demo.model.entities.mapper.mapperImplementation.MyMapperImp;
+import com.example.demo.model.entities.mapper.MyMapperImp;
 import com.example.demo.repository.ImemberRepo;
 import com.example.demo.repository.IrankinRepo;
 import com.example.demo.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
-
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -36,21 +38,28 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDto getMemberById(Long id) {
-        Member member = imemberRepo.findById(id).orElseThrow();
-        return myMapperImp.memberTomemberDto(member);
+        Optional<Member> optionalMember = imemberRepo.findById(id);
+
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            return myMapperImp.memberToMemberDto(member);
+        } else {
+            throw new PersonNotFoundException("Person not found with id: " + id);
+        }
     }
 
     @Override
-    public List<MemberDto> getALlMember() {
-        List<Member> members =  imemberRepo.findAll();
-        return myMapperImp.membersToMemberDtos(members);
+    public Page<MemberDto> getAllMembers(Pageable pageable) {
+        Page<Member> membersPage = imemberRepo.findAll(pageable);
+        return membersPage.map(myMapperImp::memberToMemberDto);
     }
+
 
     @Override
     public MemberDto addMember(MemberDto memberDto) {
-        Member  member = myMapperImp.memberDtoTomember(memberDto);
+        Member  member = myMapperImp.memberDtoToMember(memberDto);
          imemberRepo.save(member);
-         return myMapperImp.memberTomemberDto(member);
+         return myMapperImp.memberToMemberDto(member);
     }
 
     @Override
@@ -92,8 +101,8 @@ public class MemberServiceImpl implements MemberService {
         } else {
 
             throw new NoSuchElementException("Member not found with id: " + id);
-        }        }
-
+        }
+    }
 
 
     @Override
@@ -113,7 +122,6 @@ public class MemberServiceImpl implements MemberService {
         if (member == null || competition == null) {
             return ResponseManager.badRequest("Invalid member or competition").hasBody();
         }
-
         RankingId rankin = new RankingId();
         rankin.setMemberId(member.getId());
         rankin.setCompetitionId(competition.getId());
