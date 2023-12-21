@@ -19,18 +19,12 @@ import java.util.Date;
 @Data
 public class CompetitionDto {
     private Long id;
-//    private String code;
-//    @JsonDeserialize(using = LocalDateDeserializer.class)
-
+    private String code;
     private LocalDate theDate;
-
-//    @JsonDeserialize(using = LocalTimeDeserializer.class)
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     private LocalTime startTime;
-//    @JsonDeserialize(using = LocalTimeDeserializer.class)
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     private LocalTime endTime;
-
     private int numberOfParticipant;
     private String location;
     private float amount;

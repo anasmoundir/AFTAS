@@ -42,9 +42,9 @@
         }
 
         @Override
-        public List<CompetitionDto> getAllCompetitions() {
-            Page<Competition> competitions = icompetitionRepo.findAll();
-            return competitionMapper.competitionsToCompetitionDtos((List<Competition>) competitions);
+        public Page<CompetitionDto> getAllCompetitions(Pageable pageable) {
+            Page<Competition> competitions = icompetitionRepo.findAll(pageable);
+            return competitions.map(competitionMapper::competitionToCompetitionDto);
         }
 
         @Override
@@ -102,5 +102,6 @@
             Page<Competition> closedCompetitions = icompetitionRepo.findByTheDateBeforeAndEndTimeAfterOrderByTheDateDesc(currentDate, endTimeOfDay, pageable);
             return closedCompetitions.map(competitionMapper::competitionToCompetitionDto);
         }
+
 
     }

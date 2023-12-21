@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface IrankinRepo extends JpaRepository<Rankin, RankingId>
 {
@@ -25,4 +27,6 @@ public interface IrankinRepo extends JpaRepository<Rankin, RankingId>
             @Param("competition") Competition competition
     );
 
+    @Query("SELECT r FROM Rankin r WHERE r.competition = :competition ORDER BY r.rank ASC")
+    List<Rankin> findTopThreeByCompetition(@Param("competition") Competition competition);
 }

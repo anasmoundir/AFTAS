@@ -51,11 +51,12 @@ Page<Competition> findByTheDateBeforeAndEndTimeAfterOrderByTheDateDesc(
 
     void deleteById(Long id);
 
-    Page<Competition> findAll();
+    Page<Competition> findAll(Pageable pageable);
 
     @Modifying
     @Query("UPDATE Competition c SET c.numberOfParticipant = :newValue WHERE c.id = :competitionId")
     @Transactional
     void updateNumberOfParticipants(@Param("competitionId") Long competitionId, @Param("newValue") int newValue);
+
 
 }

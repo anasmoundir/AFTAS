@@ -12,7 +12,7 @@ public interface CompetitionService {
 
     CompetitionDto getCompetitionById(Long id);
 
-    List<CompetitionDto> getAllCompetitions();
+    Page<CompetitionDto> getAllCompetitions(Pageable pageable);
 
     CompetitionDto addCompetition(CompetitionDto competitionDto);
 

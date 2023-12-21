@@ -9,7 +9,6 @@ import com.example.demo.service.RankinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 
 
@@ -56,6 +55,10 @@ public class RankinServiceImpl implements RankinService {
         irankinRepo.updateRank(rankingId, newRank);
     }
 
+    @Override
+    public List<Rankin> getPodiumForCompetition(Competition competition) {
+        return irankinRepo.findTopThreeByCompetition(competition);
+    }
 
 
 }

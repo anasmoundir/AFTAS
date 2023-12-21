@@ -29,8 +29,8 @@ public class CompetitionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CompetitionDto>> getAllCompetitions() {
-        List<CompetitionDto> competitionDtos = competitionService.getAllCompetitions();
+    public ResponseEntity<Page<CompetitionDto>> getAllCompetitions(Pageable pageable) {
+        Page<CompetitionDto> competitionDtos = competitionService.getAllCompetitions(pageable);
         return ResponseEntity.ok(competitionDtos);
     }
 
