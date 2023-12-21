@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.entities.Competition;
 import com.example.demo.model.entities.Rankin;
+import com.example.demo.model.entities.dto.RankinDto;
 import com.example.demo.service.RankinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,11 +24,11 @@ public class RankinController {
 
 
     @GetMapping("/podium/{competitionId}")
-    public ResponseEntity<List<Rankin>> getPodiumForCompetition(@PathVariable Long competitionId) {
+    public ResponseEntity<List<RankinDto>> getPodiumForCompetition(@PathVariable Long competitionId) {
         Competition competition = new Competition();
         competition.setId(competitionId);
 
-        List<Rankin> podium = rankinService.getPodiumForCompetition(competition);
+        List<RankinDto> podium = rankinService.getPodiumForCompetition(competition);
 
         if (podium.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
