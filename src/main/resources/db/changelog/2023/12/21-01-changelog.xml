@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1703115874975-1" author="Youcode (generated)">
+        <addNotNullConstraint columnDataType="TIME" columnName="end_time" tableName="competitions" validate="true"/>
+    </changeSet>
+    <changeSet id="1703115874975-2" author="Youcode (generated)">
+        <addNotNullConstraint columnDataType="BIGINT" columnName="fish_id" tableName="hunting" validate="true"/>
+    </changeSet>
+    <changeSet id="1703115874975-3" author="Youcode (generated)">
+        <addNotNullConstraint columnDataType="VARCHAR(255)" columnName="identity_document_type" tableName="members"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1703115874975-4" author="Youcode (generated)">
+        <addNotNullConstraint columnDataType="BIGINT" columnName="member_id" tableName="hunting" validate="true"/>
+    </changeSet>
+    <changeSet id="1703115874975-5" author="Youcode (generated)">
+        <addNotNullConstraint columnDataType="TIME" columnName="start_time" tableName="competitions" validate="true"/>
+    </changeSet>
+    <changeSet id="1703115874975-6" author="Youcode (generated)">
+        <addNotNullConstraint columnDataType="DATE" columnName="the_date" tableName="competitions" validate="true"/>
+    </changeSet>
+
+</databaseChangeLog>

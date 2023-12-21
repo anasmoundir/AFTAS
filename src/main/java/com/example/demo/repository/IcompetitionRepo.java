@@ -1,6 +1,8 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.entities.Competition;
+import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -50,4 +52,10 @@ Page<Competition> findByTheDateBeforeAndEndTimeAfterOrderByTheDateDesc(
     void deleteById(Long id);
 
     Page<Competition> findAll();
+
+    @Modifying
+    @Query("UPDATE Competition c SET c.numberOfParticipant = :newValue WHERE c.id = :competitionId")
+    @Transactional
+    void updateNumberOfParticipants(@Param("competitionId") Long competitionId, @Param("newValue") int newValue);
+
 }

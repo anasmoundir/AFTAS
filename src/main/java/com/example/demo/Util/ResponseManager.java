@@ -25,4 +25,7 @@ public class ResponseManager {
     public static ResponseEntity<String> good(String message) {
         return ResponseEntity.status(HttpStatus.FOUND).body(message);
     }
+    public static ResponseEntity<String> Duplicated(String message) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+    }
 }

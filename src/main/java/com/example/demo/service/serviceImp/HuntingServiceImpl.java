@@ -73,7 +73,7 @@ public class HuntingServiceImpl implements HuntingService {
             if (member != null && fish != null && competition != null) {
                 Hunting hunting = new Hunting(member, fish, competition, huntingDto.getNombreOffish());
                 huntingRepo.save(hunting);
-                updateRanking(member, competition, points);
+                rankinService.updateRankingAndScore(hunting);
                 return hunting;
             } else {
                 throw new RuntimeException("One or more entities (Member, Fish, Competition) are null");
@@ -84,35 +84,33 @@ public class HuntingServiceImpl implements HuntingService {
             throw new RuntimeException("Unexpected error while creating hunting", e);
         }
     }
-    private void updateRanking(Member member, Competition competition, int points) {
-        Rankin ranking = rankrepo.findByMemberAndCompetition(member, competition);
-        if(ranking == null)
-        {
-            try
-            {
-                memberService.registerMemberInCompetition(member,competition);
-                Rankin rankingnew = rankrepo.findByMemberAndCompetition(member, competition);
-                rankingnew.setScore(rankingnew.getScore() + points);
-                rankinService.calculateRank(rankingnew);
-                rankrepo.save(rankingnew);
-            }catch (Exception e){
-                throw e;
-            }
-        }else {
-            ranking.setScore(ranking.getScore() + points);
-            rankinService.calculateRank(ranking);
-            rankrepo.save(ranking);
-        }
-    }
+//    private void updateRanking(Member member, Competition competition, int points) {
+//        Rankin ranking = rankrepo.findByMemberAndCompetition(member, competition);
+//        if(ranking == null)
+//        {
+//            try
+//            {
+//                memberService.registerMemberInCompetition(member,competition);
+//                Rankin rankingnew = rankrepo.findByMemberAndCompetition(member, competition);
+//                rankingnew.setScore(rankingnew.getScore() + points);
+//                rankinService.calculateRank(rankingnew);
+//                rankrepo.save(rankingnew);
+//            }catch (Exception e){
+//                throw e;
+//            }
+//        }else {
+//            ranking.setScore(ranking.getScore() + points);
+//            rankinService.calculateRank(ranking);
+//            rankrepo.save(ranking);
+//        }
+//    }
 
     @Override
     public HuntingDto addHuntingAndCalculateScore(HuntingDto huntingDto) {
         Hunting createdHunting = createHunting(huntingDto);
         updateMemberScore(createdHunting);
-
         return huntingMapper.huntingToHuntingDto(createdHunting);
     }
-
     private void updateMemberScore(Hunting hunting) {
         MemberDto existingMember = memberService.getMemberById(hunting.getMember().getId());
         rankinService.updateRankingAndScore(hunting);

@@ -3,6 +3,7 @@ package com.example.demo.service.serviceImp;
 import com.example.demo.model.entities.Competition;
 import com.example.demo.model.entities.Hunting;
 import com.example.demo.model.entities.Rankin;
+import com.example.demo.model.entities.RankingId;
 import com.example.demo.repository.IrankinRepo;
 import com.example.demo.service.RankinService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +34,28 @@ public class RankinServiceImpl implements RankinService {
         }
         ranking.setScore(ranking.getScore() + hunting.getPoints());
         calculateRank(ranking);
-        irankinRepo.save(ranking);
+        irankinRepo.updateRank(ranking.getId(),ranking.getRank());
     }
-        public void calculateRank(Rankin ranking) {
+    public void calculateRank(Rankin ranking) {
+
+
         Competition competition = ranking.getCompetition();
         List<Hunting> huntings = competition.getHuntings();
-        List<Integer> scores = huntings.stream().map(Hunting::getPoints).sorted(Collections.reverseOrder()).toList();
-        int rank = scores.indexOf(ranking.getScore()) + 1;
-        ranking.setRank(rank);
+        ranking.getId();
+        int rank = 1;
+
+        for (Hunting h : huntings) {
+            if (h.getPoints() > ranking.getScore()) {
+                rank++;
+            }
+        }
+
+        this.updateRankOnly(ranking.getId(),rank);
     }
+    public void updateRankOnly(RankingId rankingId, int newRank) {
+        irankinRepo.updateRank(rankingId, newRank);
+    }
+
+
+
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/huntings")
+@RequestMapping("api/huntings")
 @CrossOrigin(origins = "http://localhost:4200")
 public class HuntingController {
     private final HuntingServiceImpl huntingService;
@@ -21,6 +21,12 @@ public class HuntingController {
         this.huntingService = huntingService;
     }
 
+    @PostMapping
+    public ResponseEntity<HuntingDto> createHunting(@RequestBody HuntingDto huntingDto) {
+        System.out.println("messag");
+        HuntingDto createdHunting = huntingService.addHuntingAndCalculateScore(huntingDto);
+        return new ResponseEntity<>(createdHunting, HttpStatus.CREATED);
+    }
     @GetMapping
     public ResponseEntity<List<HuntingDto>> getAllHuntings() {
         List<HuntingDto> huntings = huntingService.getAllHuntings();
@@ -33,11 +39,7 @@ public class HuntingController {
         return ResponseEntity.ok(hunting);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<HuntingDto> createHunting(@RequestBody HuntingDto huntingDto) {
-        HuntingDto createdHunting = huntingService.addHuntingAndCalculateScore(huntingDto);
-        return new ResponseEntity<>(createdHunting, HttpStatus.CREATED);
-    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<HuntingDto> updateHunting(@PathVariable Long id, @RequestBody HuntingDto huntingDto) {

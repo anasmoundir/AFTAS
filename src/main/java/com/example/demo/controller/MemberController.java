@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("api/member")
+@RequestMapping("/api/member")
 @RestControllerAdvice
 @CrossOrigin(origins = "http://localhost:4200")
 public class MemberController {

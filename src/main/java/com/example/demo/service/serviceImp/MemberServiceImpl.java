@@ -1,6 +1,7 @@
 package com.example.demo.service.serviceImp;
 
 import com.example.demo.Exeption.CompetitionNotFoundException;
+import com.example.demo.Exeption.DuplicateRegistrationException;
 import com.example.demo.Exeption.PersonNotFoundException;
 import com.example.demo.Util.ResponseManager;
 import com.example.demo.model.entities.Competition;
@@ -19,11 +20,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Pageable;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class MemberServiceImpl implements MemberService {
@@ -67,6 +70,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberDto addMember(MemberDto memberDto) {
         Member  member = myMapperImp.memberDtoToMember(memberDto);
+        member.setNum((int) (Instant.now().toEpochMilli() % 1_000_000) + (int) (Math.random() * 1_000_000));
          imemberRepo.save(member);
          return myMapperImp.memberToMemberDto(member);
     }
@@ -131,26 +135,36 @@ public class MemberServiceImpl implements MemberService {
         if (member == null || competition == null) {
             return ResponseManager.badRequest("Invalid member or competition").hasBody();
         }
+
         LocalDate today = LocalDate.now();
         LocalTime startTime = LocalTime.now().plusHours(24);
-        Rankin rankin1 =new Rankin();
-        List<Competition> openCompetitionsList = icompetitionRepo.findOpenCompetitionsForRegistration(today,startTime);
-        if (openCompetitionsList != null && openCompetitionsList.stream().anyMatch(c -> c.getId().equals(competition.getId())))
-        {
-        RankingId rankin = new RankingId();
-        rankin.setMemberId(member.getId());
-        rankin.setCompetitionId(competition.getId());
-        rankin1.setId(rankin);
-        rankin1.setRank(0);
-        rankin1.setScore(0.0);
-        competition.setNumberOfParticipant(competition.getNumberOfParticipant() + 1);
-        irankinRepo.save(rankin1);
+
+        List<Competition> openCompetitionsList = icompetitionRepo.findOpenCompetitionsForRegistration(today, startTime);
+
+        if (openCompetitionsList != null && openCompetitionsList.stream().anyMatch(c -> c.getId().equals(competition.getId()))) {
+            boolean isMemberRegistered = irankinRepo.existsById(new RankingId(member.getId(), competition.getId()));
+
+            if (!isMemberRegistered) {
+                Rankin rankin1 = new Rankin();
+                RankingId rankin = new RankingId();
+                rankin.setMemberId(member.getId());
+                rankin.setCompetitionId(competition.getId());
+                rankin1.setId(rankin);
+                rankin1.setRank(0);
+                rankin1.setScore(0.0);
+
+                icompetitionRepo.updateNumberOfParticipants(competition.getId(), competition.getNumberOfParticipant() + 1);
+                irankinRepo.save(rankin1);
+            } else {
+
+                throw new DuplicateRegistrationException("Member is already registered for this competition");
+            }
+        } else {
+            throw new CompetitionNotFoundException("Competition not found or already closed");
         }
-        else {
-        throw new CompetitionNotFoundException("competition not found or already closed");
-        }
+
         return true;
     }
 
-    }
+}
 

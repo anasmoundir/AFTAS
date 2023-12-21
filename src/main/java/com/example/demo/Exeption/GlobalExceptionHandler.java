@@ -50,5 +50,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     {
         return  new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(DuplicateRegistrationException.class)
+    public  ResponseEntity<String>  handleDuplicateRegistration(final CompetitionIsNotOpen e)
+    {
+        return  new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
+
 
 }
