@@ -64,11 +64,10 @@ public class HuntingServiceImpl implements HuntingService {
             Fish fish = fishrepo.findById(huntingDto.getFishId())
                     .orElseThrow(() -> new FishNotFoundException("Fish not found with ID: " + huntingDto.getFishId()));
 
-            Competition competition = (Competition) icompetitionRepo.findById(huntingDto.getCompetitionId())
-                    .orElseThrow(() -> new CompetitionNotFoundException("Competition not found with ID: " + huntingDto.getCompetitionId()));
+            Competition competition = icompetitionRepo.findById(huntingDto.getCompetitionId());
 
-//            Level level = fish.getLevel();
-////            int points = level.getPoints() * huntingDto.getNombreOffish();
+            Level level = fish.getLevel();
+            int points = level.getPoints() * huntingDto.getNombreOffish();
 
             if (member != null && fish != null && competition != null) {
                 Hunting hunting = new Hunting(member, fish, competition, huntingDto.getNombreOffish());

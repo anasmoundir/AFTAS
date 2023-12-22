@@ -13,8 +13,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @Component
@@ -34,29 +35,28 @@ public class RankinServiceImpl implements RankinService {
     public void updateRankingAndScore(Hunting hunting) {
         Competition competition = hunting.getCompetition();
         Rankin ranking = irankinRepo.findByMemberAndCompetition(hunting.getMember(), competition);
+        Set<Rankin>  rankins= competition.getRankings();
         if (ranking == null) {
             ranking = new Rankin(hunting.getMember(), competition);
         }
         ranking.setScore(ranking.getScore() + hunting.getPoints());
-        calculateRank(ranking);
+        calculateRank(rankins);
         irankinRepo.updateRank(ranking.getId(),ranking.getRank());
     }
-    public void calculateRank(Rankin ranking) {
+    public void calculateRank(Set<Rankin> rankings) {
 
+        List<Rankin> rankingList = new ArrayList<>(rankings);
+        Collections.sort(rankingList, Comparator.comparingDouble(Rankin::getScore).reversed());
+        IntStream.range(0, rankingList.size()).forEach(index-> {
+            Rankin rankin = rankingList.get(index);
+            int newRank = index + 1;
+            rankin.setRank(newRank);
+            this.updateRankOnly(rankin.getId(), newRank);
+        });
 
-        Competition competition = ranking.getCompetition();
-        List<Hunting> huntings = competition.getHuntings();
-        ranking.getId();
-        int rank = 1;
-
-        for (Hunting h : huntings) {
-            if (h.getPoints() > ranking.getScore()) {
-                rank++;
-            }
-        }
-
-        this.updateRankOnly(ranking.getId(),rank);
     }
+
+
     public void updateRankOnly(RankingId rankingId, int newRank) {
         irankinRepo.updateRank(rankingId, newRank);
     }

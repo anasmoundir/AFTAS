@@ -7,20 +7,22 @@ import com.example.demo.model.entities.Member;
 import com.example.demo.model.entities.dto.HuntingDto;
 import com.example.demo.model.entities.dto.MemberDto;
 import com.example.demo.model.entities.mapper.HuntingMapper;
+import com.example.demo.model.entities.mapper.MyMapperImp;
 import com.example.demo.repository.IhuntingRepo;
 import com.example.demo.service.HuntingService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@SpringBootTest
 class HuntingServiceImplTest {
 
     @Mock
@@ -32,19 +34,20 @@ class HuntingServiceImplTest {
     @Mock
     private RankinServiceImpl rankingService;
 
+
+
     @Mock
-    private HuntingMapper huntingMapper;
+    private MyMapperImp huntingMapper;
 
     @InjectMocks
-    private HuntingService huntingService;
+    private HuntingServiceImpl huntingService;
 
     @Test
     void testAddHuntingAndCalculateScore() {
-        // Create a sample HuntingDto
+        // Mocking
         HuntingDto huntingDto = new HuntingDto();
         huntingDto.setMemberId(1L);
 
-        // Mock the behavior of your services
         MemberDto mockedMember = new MemberDto();
         when(memberService.getMemberById(1L)).thenReturn(mockedMember);
 
@@ -52,14 +55,19 @@ class HuntingServiceImplTest {
         when(huntingMapper.huntingToHuntingDto(any())).thenReturn(huntingDto);
         when(huntingMapper.huntingToHuntingDto(createdHunting)).thenReturn(huntingDto);
 
+        HuntingServiceImpl huntingService = new HuntingServiceImpl(
+                memberService, huntingRepo, huntingMapper, rankingService,
+                null, null, huntingMapper, null, null
+        );
+
         HuntingDto result = huntingService.addHuntingAndCalculateScore(huntingDto);
 
         verify(rankingService).updateRankingAndScore(any());
         verify(memberService).updateMember(eq(1L), any());
 
         assertNotNull(result);
-
     }
+
 
     @Test
     void testUpdateHunting() {
@@ -83,6 +91,7 @@ class HuntingServiceImplTest {
 
         assertNotNull(result);
     }
+
     @Test
     public void test_createHuntingWithValidInput() {
         HuntingDto huntingDto = new HuntingDto();
@@ -102,8 +111,6 @@ class HuntingServiceImplTest {
 
         HuntingDto result = huntingService.addHuntingAndCalculateScore(huntingDto);
 
-
-        assertEquals(createdHunting.getId(), result.getClass());
         assertEquals(createdHunting.getNombreOffish(), result.getNombreOffish());
         assertEquals(createdHunting.getCompetition().getId(), result.getCompetitionId());
         assertEquals(createdHunting.getFish().getId(), result.getFishId());

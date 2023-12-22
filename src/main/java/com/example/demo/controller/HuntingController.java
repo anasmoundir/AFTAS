@@ -23,7 +23,7 @@ public class HuntingController {
 
     @PostMapping
     public ResponseEntity<HuntingDto> createHunting(@RequestBody HuntingDto huntingDto) {
-        System.out.println("messag");
+        System.out.println("message");
         HuntingDto createdHunting = huntingService.addHuntingAndCalculateScore(huntingDto);
         return new ResponseEntity<>(createdHunting, HttpStatus.CREATED);
     }

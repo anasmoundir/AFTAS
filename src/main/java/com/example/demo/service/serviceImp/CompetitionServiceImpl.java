@@ -28,17 +28,8 @@
 
         @Override
         public CompetitionDto getCompetitionById(Long id) {
-
-                Optional competition = icompetitionRepo.findById(id);
-                if(competition.isPresent())
-                {
-                    Competition competition1 = (Competition) competition.get();
-                    return competitionMapper.competitionToCompetitionDto(competition1);
-
-                }else
-                {
-                    throw new CompetitionNotFoundException("competition not found ");
-                }
+            Competition competition = icompetitionRepo.findById(id);
+            return competitionMapper.competitionToCompetitionDto(competition);
         }
 
         @Override

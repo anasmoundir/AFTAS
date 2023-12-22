@@ -45,7 +45,7 @@ Page<Competition> findByTheDateBeforeAndEndTimeAfterOrderByTheDateDesc(
         Pageable pageable
 );
 
-    Optional<Object> findById(Long id);
+    Competition findById(Long id);
 
     void save(Competition competition);
 
