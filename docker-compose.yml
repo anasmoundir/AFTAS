@@ -1,0 +1,39 @@
+version: "3"
+services:
+  frontend:
+    container_name: aftas-frontend
+    restart: always
+    build:
+      context: ./AFTAS_Front  # Path to your frontend code
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"  # Adjust the port if needed
+    depends_on:
+      - backend
+
+  backend:
+    container_name: aftas-backend
+    restart: always
+    build:
+      context: ./AFTAS  # Path to your backend code
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/aftas3?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_PASSWORD:
+      SPRING_DATASOURCE_USERNAME: root
+
+  mysql:
+    image: mysql:8.0
+    container_name: aftas-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: your-mysql-root-password
+      MYSQL_DATABASE: aftas3
+      MYSQL_USER: root
+      MYSQL_PASSWORD: your-mysql-password
+    ports:
+      - "3307:3306"

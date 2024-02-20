@@ -1,4 +1,4 @@
-package org.springframework.web;
+package com.example.demo.Exeption;
 
 import com.example.demo.Exeption.*;
 import org.slf4j.Logger;

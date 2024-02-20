@@ -45,13 +45,5 @@ public class Hunting {
         this.nombreOffish = nombreOffish;
     }
 
-    public int getPoints() {
-        if (this.fish != null && this.fish.getLevel() != null) {
-            int baseScore = this.fish.getLevel().getPoints();
-            int nombreOffish = this.nombreOffish;
-            double logMultiplier = Math.log1p(nombreOffish);
-            return (int) (baseScore * logMultiplier);
-        }
-        return 0;
-    }
+
 }

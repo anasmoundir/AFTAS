@@ -83,27 +83,6 @@ public class HuntingServiceImpl implements HuntingService {
             throw new RuntimeException("Unexpected error while creating hunting", e);
         }
     }
-//    private void updateRanking(Member member, Competition competition, int points) {
-//        Rankin ranking = rankrepo.findByMemberAndCompetition(member, competition);
-//        if(ranking == null)
-//        {
-//            try
-//            {
-//                memberService.registerMemberInCompetition(member,competition);
-//                Rankin rankingnew = rankrepo.findByMemberAndCompetition(member, competition);
-//                rankingnew.setScore(rankingnew.getScore() + points);
-//                rankinService.calculateRank(rankingnew);
-//                rankrepo.save(rankingnew);
-//            }catch (Exception e){
-//                throw e;
-//            }
-//        }else {
-//            ranking.setScore(ranking.getScore() + points);
-//            rankinService.calculateRank(ranking);
-//            rankrepo.save(ranking);
-//        }
-//    }
-
     @Override
     public HuntingDto addHuntingAndCalculateScore(HuntingDto huntingDto) {
         Hunting createdHunting = createHunting(huntingDto);

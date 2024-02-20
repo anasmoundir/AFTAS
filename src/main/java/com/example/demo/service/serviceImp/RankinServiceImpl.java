@@ -1,9 +1,6 @@
 package com.example.demo.service.serviceImp;
 
-import com.example.demo.model.entities.Competition;
-import com.example.demo.model.entities.Hunting;
-import com.example.demo.model.entities.Rankin;
-import com.example.demo.model.entities.RankingId;
+import com.example.demo.model.entities.*;
 import com.example.demo.model.entities.dto.RankinDto;
 import com.example.demo.model.entities.mapper.MyMapperImp;
 import com.example.demo.repository.IrankinRepo;
@@ -39,9 +36,18 @@ public class RankinServiceImpl implements RankinService {
         if (ranking == null) {
             ranking = new Rankin(hunting.getMember(), competition);
         }
-        ranking.setScore(ranking.getScore() + hunting.getPoints());
+        ranking.setScore(ranking.getScore() + getPoints(hunting.getFish(),hunting.getNombreOffish()));
         calculateRank(rankins);
         irankinRepo.updateRank(ranking.getId(),ranking.getRank());
+    }
+
+    public int getPoints(Fish fish,int nombreOffish) {
+        if (fish != null && fish.getLevel() != null) {
+             int  baseScore = fish.getLevel().getPoints();
+            double logMultiplier = Math.log1p(nombreOffish);
+            return (int) (baseScore * logMultiplier);
+        }
+        return 0;
     }
     public void calculateRank(Set<Rankin> rankings) {
 
