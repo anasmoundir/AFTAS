@@ -16,6 +16,5 @@ import lombok.*;
 public class RankinDto {
     private RankingId id;
     private int rank;
-
     private double score;
 }

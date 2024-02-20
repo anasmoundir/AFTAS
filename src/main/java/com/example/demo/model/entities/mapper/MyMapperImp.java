@@ -13,6 +13,8 @@ public class MyMapperImp implements CompetitionMapper, MemberMapper, HuntingMapp
 
     private final ModelMapper modelMapper;
 
+    //
+
     @Autowired
     public MyMapperImp(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
