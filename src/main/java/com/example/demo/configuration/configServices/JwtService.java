@@ -71,7 +71,7 @@ public class JwtService {
             String role = (String) claims.get("role");
             return createToken(new HashMap<>(), username, JwtExpiration);
         } catch (Exception e) {
-            return null; // Return null if unable to generate a new access token
+            return null;
         }
     }
 

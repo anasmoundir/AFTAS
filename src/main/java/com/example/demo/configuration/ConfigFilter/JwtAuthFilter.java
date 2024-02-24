@@ -50,9 +50,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String refreshToken = null;
         String username = null;
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer "))
+        {
             accessToken = authHeader.substring(7);
-            refreshToken = request.getHeader("Refresh-Token"); // Assuming you pass refresh token in a header
+            refreshToken = request.getHeader("Refresh-Token");
             username = jwtService.extractUsername(accessToken);
         }
 
@@ -75,7 +76,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }

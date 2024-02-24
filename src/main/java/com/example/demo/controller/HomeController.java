@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 import com.example.demo.configuration.configServices.JwtService;
-import com.example.demo.model.entities.User;
 import com.example.demo.model.entities.dto.AuthRequestDTO;
 import com.example.demo.model.entities.dto.JwtResponseDTO;
 import com.example.demo.model.entities.dto.LoginDto;
@@ -18,8 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,6 +76,7 @@ public class HomeController {
         }
         return new  ResponseEntity<>("User registered successfully",HttpStatus.OK);
     }
+
     @PostMapping("/activate")
     public ResponseEntity<String> activateUser(@RequestBody LoginDto loginDto) {
 
@@ -92,11 +91,38 @@ public class HomeController {
     }
 
     @PostMapping("/refresh-token")
-    public  void refreshToken(
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse)
-    {
+    public ResponseEntity<JwtResponseDTO> refreshToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        String refreshToken = httpServletRequest.getHeader("Refresh-Token");
 
+        if (refreshToken == null) {
+            JwtResponseDTO responseDTO = JwtResponseDTO.builder()
+                    .accessToken(null)
+                    .refreshToken(null)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
 
+        String newAccessToken = jwtService.generateAccessTokenFromRefreshToken(refreshToken);
+
+        if (newAccessToken != null) {
+            JwtResponseDTO responseDTO = JwtResponseDTO.builder()
+                    .accessToken(newAccessToken)
+                    .refreshToken(null)
+                    .build();
+            return ResponseEntity.ok().body(responseDTO);
+        } else {
+            JwtResponseDTO responseDTO = JwtResponseDTO.builder()
+                    .accessToken(null)
+                    .refreshToken(null)
+                    .build();
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+    @PostMapping("/logout")
+    public void logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
     }
 }
