@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
@@ -17,7 +18,14 @@ import io.jsonwebtoken.Claims;
 
 @Component
 public class JwtService {
-    public static final String SECRET = "357638792F423F4428472B4B6250655368566D597133743677397A2443264629";
+    @Value("${secret-key}")
+    private String SECRET;
+
+    @Value("${access-token-expiration-time}")
+    private long JwtExpiration;
+
+    @Value("${refresh-token-expiration-time}")
+    private long refreshTokenExpiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -41,6 +49,7 @@ public class JwtService {
                 .getBody();
     }
 
+
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
@@ -50,23 +59,42 @@ public class JwtService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    public String generateRefreshToken(String username, String role){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+        return createToken(claims, username, refreshTokenExpiration);
+    }
+    public String generateAccessTokenFromRefreshToken(String refreshToken) {
+        try {
+            Claims claims = extractAllClaims(refreshToken);
+            String username = claims.getSubject();
+            String role = (String) claims.get("role");
+            return createToken(new HashMap<>(), username, JwtExpiration);
+        } catch (Exception e) {
+            return null; // Return null if unable to generate a new access token
+        }
+    }
+
+
+
+
 
 
     public String generateToken(String username, String role){
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
-        return createToken(claims, username);
+        return createToken(claims, username, JwtExpiration);
     }
 
 
 
-    private String createToken(Map<String, Object> claims, String username) {
+    private String createToken(Map<String, Object> claims, String username, long expirationTime) {
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*1))
+                .setExpiration(new Date(System.currentTimeMillis()+expirationTime))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 

@@ -8,6 +8,8 @@ import com.example.demo.model.entities.dto.SignUpDto;
 import com.example.demo.repository.IuserRepo;
 import com.example.demo.service.RegistrationService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,37 +37,35 @@ public class HomeController {
 
     @Autowired
     private RegistrationService registrationService;
-
     @Resource
     private JwtService jwtService;
 
     @PostMapping("/login")
-    public JwtResponseDTO authenticateUser(@RequestBody AuthRequestDTO authRequestDTO)
-    {
+    public ResponseEntity<?> authenticateUser(@RequestBody AuthRequestDTO authRequestDTO) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword())
             );
             System.out.println("Authentication:  " + authentication.getAuthorities());
 
-            if(registrationService.isEnable(authRequestDTO.getUsername()))
-            {
-                throw new UsernameNotFoundException("User not activated");
+            if(registrationService.isEnable(authRequestDTO.getUsername())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User account is not activated. Please check your email for activation instructions.");
             }
 
-            if (authentication.isAuthenticated())
-            {
+            if (authentication.isAuthenticated()) {
                 String role = authentication.getAuthorities().toString();
                 String generatedToken = jwtService.generateToken(authRequestDTO.getUsername(), role);
-                return JwtResponseDTO.builder().accessToken(generatedToken).build();
+                String refreshToken = jwtService.generateRefreshToken(authRequestDTO.getUsername(), role);
+                return ResponseEntity.ok(JwtResponseDTO.builder().accessToken(generatedToken).refreshToken(refreshToken).build());
             } else {
-                throw new UsernameNotFoundException("Invalid user credentials");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials.");
             }
-
         } catch (AuthenticationException e) {
-            throw new UsernameNotFoundException("Invalid user credentials", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials.");
         }
     }
+
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpDto signupdto) {
         if (userRepository.existsByUsername(signupdto.getUsername())) {
@@ -89,5 +89,14 @@ public class HomeController {
       {
           return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
       }
+    }
+
+    @PostMapping("/refresh-token")
+    public  void refreshToken(
+            HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse)
+    {
+
+
     }
 }
