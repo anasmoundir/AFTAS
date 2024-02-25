@@ -2,6 +2,7 @@ package com.example.demo.service.serviceImp;
 
 import com.example.demo.Exeption.CompetitionNotFoundException;
 import com.example.demo.Exeption.FishNotFoundException;
+import com.example.demo.Exeption.MemberIsNotRegistredInCompetitionException;
 import com.example.demo.model.entities.*;
 import com.example.demo.model.entities.dto.CompetitionDto;
 import com.example.demo.model.entities.dto.HuntingDto;
@@ -13,6 +14,7 @@ import com.example.demo.service.HuntingService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,10 +79,8 @@ public class HuntingServiceImpl implements HuntingService {
             } else {
                 throw new RuntimeException("One or more entities (Member, Fish, Competition) are null");
             }
-        } catch (EntityNotFoundException e) {
-            throw new RuntimeException("Entity not found", e);
         } catch (Exception e) {
-            throw new RuntimeException("Unexpected error while creating hunting", e);
+            throw new RuntimeException("Entity not found", e);
         }
     }
     @Override

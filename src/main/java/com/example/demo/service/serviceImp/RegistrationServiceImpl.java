@@ -1,14 +1,18 @@
 package com.example.demo.service.serviceImp;
-
+import com.example.demo.configuration.configServices.JwtService;
 import com.example.demo.model.entities.Role;
 import com.example.demo.model.entities.User;
+import com.example.demo.model.entities.dto.AuthRequestDTO;
+import com.example.demo.model.entities.dto.JwtResponseDTO;
 import com.example.demo.model.entities.dto.SignUpDto;
 import com.example.demo.repository.IroleRepo;
 import com.example.demo.repository.IuserRepo;
 import com.example.demo.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +27,12 @@ public class RegistrationServiceImpl implements RegistrationService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private IroleRepo iroleRepo;
+    @Autowired
+    private RegistrationService registrationService;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
     @Override
     public void registerUser(SignUpDto signupdto) {
         User user = new User();
@@ -31,10 +41,10 @@ public class RegistrationServiceImpl implements RegistrationService {
         user.setEmail(signupdto.getEmail());
         user.setPassword(passwordEncoder.encode(signupdto.getPassword()));
         Set<Role> roles = new HashSet<>();
-        Role userRole = iroleRepo.findByName("USER");
+        Role userRole = iroleRepo.findByName("ADHERENT");
         if (userRole == null) {
             userRole = new Role();
-            userRole.setName("USER");
+            userRole.setName("ADHERENT");
             iroleRepo.save(userRole);
         }
         roles.add(userRole);
@@ -55,5 +65,44 @@ public class RegistrationServiceImpl implements RegistrationService {
     public boolean isEnable(String username) {
         User user = userRepository.findByUsername(username);
         return user.isEnabled();
+    }
+    @Override
+    public JwtResponseDTO authenticateUser(AuthRequestDTO authRequestDTO) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword())
+            );
+
+            if (isEnable(authRequestDTO.getUsername()) ==false) {
+                throw new AuthenticationException("User account is not activated. Please check your email for activation instructions.") {};
+            }
+
+            if (authentication.isAuthenticated()) {
+                User user = userRepository.findByUsername(authRequestDTO.getUsername());
+                String role = getHighestRole(user.getRoles());
+                String generatedToken = jwtService.generateToken(authRequestDTO.getUsername(), role);
+                String refreshToken = jwtService.generateRefreshToken(authRequestDTO.getUsername(), role);
+                return JwtResponseDTO.builder().accessToken(generatedToken).refreshToken(refreshToken).build();
+            } else {
+                throw new AuthenticationException("Invalid user credentials.") {};
+            }
+        } catch (AuthenticationException e) {
+            throw new AuthenticationException("Invalid user credentials.") {};
+        }
+    }
+
+    private String getHighestRole(Set<Role> roles) {
+        String highestRole = "ROLE_USER";
+        for (Role role : roles) {
+            if (role.getName().equals("ROLE_MANAGER")) {
+                highestRole = "ROLE_MANAGER";
+                break;
+            } else if (role.getName().equals("ROLE_JURY")) {
+                if (!highestRole.equals("ROLE_MANAGER")) {
+                    highestRole = "ROLE_JURY";
+                }
+            }
+        }
+        return highestRole;
     }
 }

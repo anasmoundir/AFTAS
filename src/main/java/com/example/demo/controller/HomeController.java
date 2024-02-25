@@ -13,20 +13,18 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin("http://localhost:4200")
 public class HomeController {
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -38,29 +36,16 @@ public class HomeController {
     @Resource
     private JwtService jwtService;
 
+
+
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody AuthRequestDTO authRequestDTO) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword())
-            );
-            System.out.println("Authentication:  " + authentication.getAuthorities());
-
-            if(registrationService.isEnable(authRequestDTO.getUsername())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("User account is not activated. Please check your email for activation instructions.");
-            }
-
-            if (authentication.isAuthenticated()) {
-                String role = authentication.getAuthorities().toString();
-                String generatedToken = jwtService.generateToken(authRequestDTO.getUsername(), role);
-                String refreshToken = jwtService.generateRefreshToken(authRequestDTO.getUsername(), role);
-                return ResponseEntity.ok(JwtResponseDTO.builder().accessToken(generatedToken).refreshToken(refreshToken).build());
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials.");
-            }
+            JwtResponseDTO response = registrationService.authenticateUser(authRequestDTO);
+            return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user credentials.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
@@ -78,6 +63,7 @@ public class HomeController {
     }
 
     @PostMapping("/activate")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<String> activateUser(@RequestBody LoginDto loginDto) {
 
       if (registrationService.activateUser(loginDto.getUsername()))

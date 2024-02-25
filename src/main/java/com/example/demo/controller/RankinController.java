@@ -7,6 +7,7 @@ import com.example.demo.service.RankinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,19 +22,15 @@ public class RankinController {
         this.rankinService = rankinService;
     }
 
-
-
     @GetMapping("/podium/{competitionId}")
+    @PreAuthorize("hasAnyRole('ADHERENT', 'JURY', 'MANAGER')")
     public ResponseEntity<List<RankinDto>> getPodiumForCompetition(@PathVariable Long competitionId) {
         Competition competition = new Competition();
         competition.setId(competitionId);
-
         List<RankinDto> podium = rankinService.getPodiumForCompetition(competition);
-
         if (podium.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity<>(podium, HttpStatus.OK);
     }
 }

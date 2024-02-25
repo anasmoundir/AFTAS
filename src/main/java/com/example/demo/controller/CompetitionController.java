@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,12 +30,14 @@ public class CompetitionController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADHERENT', 'JURY', 'MANAGER')")
     public ResponseEntity<Page<CompetitionDto>> getAllCompetitions(Pageable pageable) {
         Page<CompetitionDto> competitionDtos = competitionService.getAllCompetitions(pageable);
         return ResponseEntity.ok(competitionDtos);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<CompetitionDto> addCompetition(@RequestBody CompetitionDto competitionDto) {
         CompetitionDto newCompetitionDto = competitionService.addCompetition(competitionDto);
         return ResponseEntity.ok(newCompetitionDto);

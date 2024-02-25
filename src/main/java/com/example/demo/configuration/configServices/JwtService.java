@@ -1,13 +1,12 @@
 package com.example.demo.configuration.configServices;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import io.jsonwebtoken.Claims;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,12 +40,17 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (MalformedJwtException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Invalid JWT token: " + e.getMessage());
+        }
     }
 
 
@@ -74,10 +78,6 @@ public class JwtService {
             return null;
         }
     }
-
-
-
-
 
 
     public String generateToken(String username, String role){
