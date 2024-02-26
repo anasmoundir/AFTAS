@@ -73,8 +73,9 @@ public class RegistrationServiceImpl implements RegistrationService {
                     new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword())
             );
 
-            if (isEnable(authRequestDTO.getUsername()) ==false) {
-                throw new AuthenticationException("User account is not activated. Please check your email for activation instructions.") {};
+            if (!isEnable(authRequestDTO.getUsername())) {
+                String activationMessage = "User account is not activated. Please check your email for activation instructions.";
+                throw new AuthenticationException(activationMessage) {};
             }
 
             if (authentication.isAuthenticated()) {
@@ -84,22 +85,23 @@ public class RegistrationServiceImpl implements RegistrationService {
                 String refreshToken = jwtService.generateRefreshToken(authRequestDTO.getUsername(), role);
                 return JwtResponseDTO.builder().accessToken(generatedToken).refreshToken(refreshToken).build();
             } else {
-                throw new AuthenticationException("Invalid user credentials.") {};
+                String errorMessage = "Invalid user credentials.";
+                throw new AuthenticationException(errorMessage) {};
             }
         } catch (AuthenticationException e) {
-            throw new AuthenticationException("Invalid user credentials.") {};
+            throw new AuthenticationException(e.getMessage()) {};
         }
     }
 
     private String getHighestRole(Set<Role> roles) {
-        String highestRole = "ROLE_USER";
+        String highestRole = "ADHERENT";
         for (Role role : roles) {
-            if (role.getName().equals("ROLE_MANAGER")) {
-                highestRole = "ROLE_MANAGER";
+            if (role.getName().equals("MANAGER")) {
+                highestRole = "MANAGER";
                 break;
-            } else if (role.getName().equals("ROLE_JURY")) {
-                if (!highestRole.equals("ROLE_MANAGER")) {
-                    highestRole = "ROLE_JURY";
+            } else if (role.getName().equals("JURY")) {
+                if (!highestRole.equals("MANAGER")) {
+                    highestRole = "JURY";
                 }
             }
         }

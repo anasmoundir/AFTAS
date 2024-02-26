@@ -56,10 +56,10 @@ public class HomeController {
         }
         if (userRepository.existsByEmail(signupdto.getEmail())) {
             return new ResponseEntity<>("Email is already exist!", HttpStatus.BAD_REQUEST);
-        } else {
-            registrationService.registerUser(signupdto);
         }
-        return new  ResponseEntity<>("User registered successfully",HttpStatus.OK);
+        registrationService.registerUser(signupdto);
+        String successMessage = "User registered successfully!";
+        return new ResponseEntity<>(successMessage, HttpStatus.OK);
     }
 
     @PostMapping("/activate")

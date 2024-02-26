@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,10 +42,8 @@ public class SecurityConfig
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             return http
-                    .csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorize -> authorize
+                    .csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults()).authorizeHttpRequests(authorize -> authorize
                             .requestMatchers("/api/auth/**").permitAll()
-                            .requestMatchers("/api/v1/user/**").hasRole("USER")
-                            .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                             .anyRequest().authenticated())
                     .sessionManagement(AbstractHttpConfigurer::disable)
                     .sessionManagement(sessionManagement -> sessionManagement
@@ -69,15 +68,5 @@ public class SecurityConfig
         {
                return new UserDetailsServiceImpl();
         }
-        @Bean
-        CorsConfigurationSource corsConfigurationSource() {
-            CorsConfiguration configuration = new CorsConfiguration();
-            configuration.addAllowedOrigin("*");
-            configuration.addAllowedMethod("*");
-            configuration.addAllowedHeader("*");
-            configuration.setExposedHeaders(List.of("x-auth-token"));
-            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", configuration);
-            return source;
-        }
+
     }
