@@ -17,7 +17,6 @@ import java.util.function.Function;
 
 import io.jsonwebtoken.Claims;
 
-import static com.example.demo.configuration.configServices.UserDetailsServiceImpl.logger;
 
 @Component
 public class JwtService {

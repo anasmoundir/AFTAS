@@ -85,16 +85,13 @@ public class RegistrationServiceImpl implements RegistrationService {
             }
 
             if (authentication.isAuthenticated()) {
-                // Log user information
                 logUserInfo(authentication);
 
-                // Generate JWT tokens
                 User user = userRepository.findByUsername(authRequestDTO.getUsername());
                 String role = getHighestRole(user.getRoles());
                 String generatedToken = jwtService.generateToken(authRequestDTO.getUsername(), role);
                 String refreshToken = jwtService.generateRefreshToken(authRequestDTO.getUsername(), role);
 
-                // Return JWT response DTO
                 return JwtResponseDTO.builder().accessToken(generatedToken).refreshToken(refreshToken).build();
             } else {
                 String errorMessage = "Invalid user credentials.";
@@ -106,18 +103,15 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     private void logUserInfo(Authentication authentication) {
-        // Log username
         String username = authentication.getName();
         System.out.println("User logged in: " + username);
 
-        // Log authorities (roles)
+
         System.out.println("User authorities (roles):");
         for (GrantedAuthority authority : authentication.getAuthorities()) {
             System.out.println("- " + authority.getAuthority());
         }
 
-        // Log additional user information if needed
-        // ...
     }
 
     private String getHighestRole(Set<Role> roles) {

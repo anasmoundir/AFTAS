@@ -21,8 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private IuserRepo userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
 
     static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
@@ -47,5 +46,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .accountLocked(!user.isEnabled())
                 .build();
     }
-
 }

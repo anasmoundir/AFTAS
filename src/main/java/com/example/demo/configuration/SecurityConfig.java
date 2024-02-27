@@ -58,8 +58,8 @@ public class SecurityConfig
                             .requestMatchers(HttpMethod.PUT, "/api/member/{id}").hasAuthority("MANAGER")
                             .requestMatchers(HttpMethod.DELETE, "/api/member/{id}").hasAuthority("MANAGER")
 
+
                             .requestMatchers(HttpMethod.GET, "/api/competition").hasAnyAuthority("JURY", "ADHERENT", "MANAGER")
-                            .requestMatchers(HttpMethod.GET, "/api/competition/open").hasAnyAuthority("JURY","MANAGER")
                             .requestMatchers(HttpMethod.POST, "/api/competition").hasAuthority("JURY")
                             .requestMatchers(HttpMethod.PUT, "/api/competition/{id}").hasAuthority("JURY")
                             .requestMatchers(HttpMethod.DELETE, "/api/competition/{id}").hasAuthority("JURY")

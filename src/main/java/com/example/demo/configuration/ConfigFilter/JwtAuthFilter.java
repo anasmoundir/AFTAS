@@ -47,7 +47,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtService.validateToken(accessToken, userDetails)) {
-                // Extract authorities from token
+
                 Collection<? extends GrantedAuthority> authorities = jwtService.extractAuthorities(accessToken);
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
@@ -58,7 +58,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 if (newAccessToken != null) {
                     userDetails = userDetailsService.loadUserByUsername(username);
-                    // Extract authorities from token
+
                     Collection<? extends GrantedAuthority> authorities = jwtService.extractAuthorities(newAccessToken);
 
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
