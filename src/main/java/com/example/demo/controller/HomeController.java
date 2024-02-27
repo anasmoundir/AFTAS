@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.configuration.configServices.JwtService;
+import com.example.demo.model.entities.User;
 import com.example.demo.model.entities.dto.AuthRequestDTO;
 import com.example.demo.model.entities.dto.JwtResponseDTO;
 import com.example.demo.model.entities.dto.LoginDto;
@@ -21,6 +22,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -35,7 +38,6 @@ public class HomeController {
     private RegistrationService registrationService;
     @Resource
     private JwtService jwtService;
-
 
 
 
@@ -63,7 +65,6 @@ public class HomeController {
     }
 
     @PostMapping("/activate")
-    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<String> activateUser(@RequestBody LoginDto loginDto) {
 
       if (registrationService.activateUser(loginDto.getUsername()))
@@ -74,6 +75,13 @@ public class HomeController {
       {
           return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
       }
+
+    }
+
+    @GetMapping("/deactivated")
+    public ResponseEntity<List<User>> getDeactivatedUsers() {
+        List<User> deactivatedUsers = registrationService.getDeactivatedUsers();
+        return ResponseEntity.ok(deactivatedUsers);
     }
 
     @PostMapping("/refresh-token")

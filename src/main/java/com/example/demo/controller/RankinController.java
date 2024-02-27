@@ -23,7 +23,6 @@ public class RankinController {
     }
 
     @GetMapping("/podium/{competitionId}")
-    @PreAuthorize("hasAnyRole('ADHERENT', 'JURY', 'MANAGER')")
     public ResponseEntity<List<RankinDto>> getPodiumForCompetition(@PathVariable Long competitionId) {
         Competition competition = new Competition();
         competition.setId(competitionId);

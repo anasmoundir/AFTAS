@@ -3,20 +3,27 @@ package com.example.demo.configuration.configServices;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import io.jsonwebtoken.Claims;
 
+import static com.example.demo.configuration.configServices.UserDetailsServiceImpl.logger;
+
 @Component
 public class JwtService {
+    //logger
+    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
     @Value("${secret-key}")
     private String SECRET;
 
@@ -101,5 +108,13 @@ public class JwtService {
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public Collection<? extends GrantedAuthority> extractAuthorities(String token) {
+        Claims claims = extractAllClaims(token);
+        String role = (String) claims.get("role");
+        Collection<? extends GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(role));
+        logger.debug("Authorities extracted from token: {}", authorities);
+        return authorities;
     }
 }

@@ -52,37 +52,31 @@ public class MemberController {
     }
     }
     @GetMapping("/All")
-    @PreAuthorize("hasAnyRole('ADHERENT', 'JURY', 'MANAGER')")
     public ResponseEntity<Page<MemberDto>> getAllMembers(Pageable pageable) {
         Page<MemberDto> membersPage = memberService.getAllMembers(pageable);
         return ResponseEntity.ok(membersPage);
     }
     @PostMapping
-    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<MemberDto> addMember(@RequestBody MemberDto memberDto)
     {
         MemberDto memberDto1 = memberService.addMember(memberDto);
         return ResponseEntity.ok(memberDto1);
     }
     @GetMapping("/members/searchByName")
-    @PreAuthorize("hasAnyRole('ADHERENT', 'JURY', 'MANAGER')")
     public List<MemberDto> searchMembersByName(@RequestParam String name) {
         return memberService.searchMembersByName(name);
     }
 
     @GetMapping("/members/searchByFamilyname")
-    @PreAuthorize("hasAnyRole('ADHERENT', 'JURY', 'MANAGER')")
     public List<MemberDto> searchMembersByFamilyname(@RequestParam String familyname) {
         return memberService.searchMembersByFamilyname(familyname);
     }
 
     @GetMapping("/members/searchByNum")
-    @PreAuthorize("hasAnyRole('ADHERENT', 'JURY', 'MANAGER')")
     public List<MemberDto> searchMembersByNum(@RequestParam Long num) {
         return memberService.searchMembersByNum(num);
     }
     @PostMapping("/{memberId}/competitions/{competitionId}/register")
-    @PreAuthorize("hasRole('JURY')")
     public ResponseEntity<String> registerMemberInCompetition(@PathVariable Long memberId, @PathVariable Long competitionId) {
         MemberDto member = memberService.getMemberById(memberId);
         CompetitionDto competition = competitionService.getCompetitionById(competitionId);
@@ -100,7 +94,6 @@ public class MemberController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<MemberDto> updateMember(@PathVariable Long id, @RequestBody MemberDto memberDto) {
         try {
             memberService.updateMember(id, memberDto);
@@ -111,7 +104,6 @@ public class MemberController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
         try {
             memberService.deleteMember(id);
